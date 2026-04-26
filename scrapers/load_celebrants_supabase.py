@@ -134,6 +134,16 @@ def main() -> int:
     from supabase import create_client
 
     client = create_client(url, key)
+    # Fail fast with a clear action if the migration is not applied.
+    try:
+        client.table("celebrants").select("celebrant_id", count="exact").limit(1).execute()
+    except Exception as e:  # noqa: BLE001
+        print(
+            "ERROR: public.celebrants not found. Run supabase/migrations/003_celebrants.sql "
+            f"in the Supabase SQL editor (or `supabase db push`), then retry.\n{e!r}",
+            file=sys.stderr,
+        )
+        return 1
     loaded = 0
     err = 0
     n = len(records)

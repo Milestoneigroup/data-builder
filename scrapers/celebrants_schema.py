@@ -4,7 +4,9 @@
 
 If ``data/celebrants_au_v1.csv`` exists, column order is taken from its header
 (so you can add the file later without code changes). Otherwise a default
-53-column superset (merge + website + Places + load) is used.
+53-column superset (merge + website + Places + load) is used. When the starter
+CSV or DB column list changes, update this module and
+``supabase/migrations/003_celebrants.sql`` together.
 """
 
 from __future__ import annotations
