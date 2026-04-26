@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "data-builder"
+version = "0.1.0"
+description = "Milestone Innovations Group — Python data scraper agent toolkit"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+authors = [{ name = "Milestone Innovations Group" }]
+dependencies = [
+  "httpx>=0.27",
+  "beautifulsoup4>=4.12",
+  "lxml>=5.0",
+  "pydantic>=2",
+  "pydantic-settings>=2",
+  "python-dotenv>=1.0",
+  "supabase>=2.10.0",
+  "anthropic>=0.40.0",
+  "googlemaps>=4.10.0",
+  "pandas>=2.2.0",
+  "openpyxl>=3.1.0",
+  "thefuzz>=0.22.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+  "ruff>=0.6",
+]
+
+[project.scripts]
+data-builder = "data_builder.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
