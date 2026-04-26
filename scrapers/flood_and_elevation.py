@@ -16,6 +16,7 @@ from __future__ import annotations
 import io
 import json
 import logging
+import os
 import re
 import sys
 import time
@@ -33,8 +34,9 @@ if str(_SRC) not in sys.path:
 
 from dotenv import load_dotenv
 
-load_dotenv(_ROOT / ".env.local")
-load_dotenv(_ROOT / ".env")
+load_dotenv(_ROOT / ".env", override=True)
+load_dotenv(_ROOT / ".env.local", override=True)
+load_dotenv(_ROOT / "env.local", override=True)
 
 LOG = logging.getLogger(__name__)
 ELEVATION_DELAY_S = 0.3
@@ -298,7 +300,7 @@ def _fetch_venues(supabase: Any) -> list[dict[str, Any]]:
     while True:
         resp = (
             supabase.table("venues")
-            .select("id, name, latitude, longitude, lat, lng")
+            .select("id, name, lat, lng")
             .range(offset, offset + page - 1)
             .execute()
         )
@@ -339,12 +341,16 @@ def main() -> None:
     settings = get_settings()
     sb_url = (settings.supabase_url or "").strip()
     sb_key = (settings.supabase_service_role_key or settings.supabase_key or "").strip()
-    maps_key = (settings.google_maps_api_key or settings.google_places_api_key or "").strip()
+    maps_key = (
+        os.getenv("GOOGLE_PLACES_API_KEY")
+        or os.getenv("GOOGLE_MAPS_API_KEY")
+        or (settings.google_maps_api_key or settings.google_places_api_key or "").strip()
+    ).strip()
 
     if not sb_url or not sb_key:
         raise RuntimeError("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_KEY) are required.")
     if not maps_key:
-        raise RuntimeError("GOOGLE_MAPS_API_KEY (or GOOGLE_PLACES_API_KEY) is required for elevation.")
+        raise RuntimeError("Set GOOGLE_PLACES_API_KEY or GOOGLE_MAPS_API_KEY for elevation.")
 
     from supabase import create_client
 
