@@ -6,7 +6,7 @@ On Railway (default): ``python -m scrapers.monthly_snapshot`` starts a **Blockin
 (1st of month, 17:00 UTC ≈ 3:00 Sydney on the 1st across AEST/AEDT).
 
 Requires env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_KEY with service privileges),
-GOOGLE_PLACES_API_KEY, ANTHROPIC_API_KEY.
+GOOGLE_PLACES_API_KEY or GOOGLE_MAPS_API_KEY, ANTHROPIC_API_KEY.
 
 Supabase ``venues`` rows must include ``id``, ``place_id``, and coordinates as ``latitude``/``longitude``
 or ``lat``/``lng``.
@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import sys
 import time
@@ -29,13 +30,17 @@ from zoneinfo import ZoneInfo
 import httpx
 from dotenv import load_dotenv
 
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
+
 _ROOT = Path(__file__).resolve().parents[1]
 _SRC = _ROOT / "src"
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
-load_dotenv(_ROOT / ".env.local")
-load_dotenv(_ROOT / ".env")
+load_dotenv(_ROOT / ".env", override=True)
+load_dotenv(_ROOT / ".env.local", override=True)
+load_dotenv(_ROOT / "env.local", override=True)
 
 LOG = logging.getLogger(__name__)
 PROGRESS_EVERY = 50
@@ -403,7 +408,7 @@ def _fetch_venues(supabase: Any) -> list[dict[str, Any]]:
     while True:
         resp = (
             supabase.table("venues")
-            .select("id, place_id, latitude, longitude, lat, lng, name")
+            .select("id, place_id, lat, lng, name")
             .range(offset, offset + page - 1)
             .execute()
         )
@@ -453,13 +458,17 @@ def main() -> None:
     settings = get_settings()
     sb_url = (settings.supabase_url or "").strip()
     sb_key = (settings.supabase_service_role_key or settings.supabase_key or "").strip()
-    g_key = (settings.google_places_api_key or "").strip()
+    g_key = (
+        os.getenv("GOOGLE_PLACES_API_KEY")
+        or os.getenv("GOOGLE_MAPS_API_KEY")
+        or (settings.google_places_api_key or settings.google_maps_api_key or "").strip()
+    ).strip()
     anth_key = (settings.anthropic_api_key or "").strip()
 
     if not sb_url or not sb_key:
         raise RuntimeError("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_KEY) are required.")
     if not g_key:
-        raise RuntimeError("GOOGLE_PLACES_API_KEY is required.")
+        raise RuntimeError("Set GOOGLE_PLACES_API_KEY or GOOGLE_MAPS_API_KEY.")
     if not anth_key:
         raise RuntimeError("ANTHROPIC_API_KEY is required.")
 
@@ -603,7 +612,8 @@ def main() -> None:
             if processed % PROGRESS_EVERY == 0 or processed == total:
                 print(
                     f"Progress: {processed}/{total} | Rated: {rated} | Pollen: {pollen_ok} | "
-                    f"AQ: {aq_ok} | Sentiment: {sentiment_ok} | Errors: {errors}"
+                    f"AQ: {aq_ok} | Sentiment: {sentiment_ok} | Errors: {errors}",
+                    flush=True,
                 )
 
 

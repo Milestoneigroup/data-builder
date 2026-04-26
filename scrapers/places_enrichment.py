@@ -20,6 +20,9 @@ import pandas as pd
 from dotenv import load_dotenv
 from thefuzz import fuzz
 
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
+
 _ROOT = Path(__file__).resolve().parents[1]
 _SRC = _ROOT / "src"
 if str(_SRC) not in sys.path:
@@ -439,9 +442,9 @@ def _write_checkpoint(rows: list[dict[str, Any]]) -> None:
 
 
 def _load_google_api_key() -> str:
-    for path in (_ROOT / ".env.local", _ROOT / "env.local", _ROOT / ".env"):
+    for path in (_ROOT / ".env", _ROOT / ".env.local", _ROOT / "env.local"):
         if path.is_file():
-            load_dotenv(path, override=False, encoding="utf-8")
+            load_dotenv(path, override=True, encoding="utf-8")
     key = (
         os.getenv("GOOGLE_PLACES_API_KEY")
         or os.getenv("GOOGLE_MAPS_API_KEY")
@@ -454,7 +457,7 @@ def _load_google_api_key() -> str:
         from data_builder.config import get_settings
 
         s = get_settings()
-        return (s.google_places_api_key or "").strip()
+        return (s.google_places_api_key or s.google_maps_api_key or "").strip()
     except Exception:  # noqa: BLE001
         return ""
 
