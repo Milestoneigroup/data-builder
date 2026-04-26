@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     google_places_api_key: str = Field(
         default="", validation_alias="GOOGLE_PLACES_API_KEY"
     )
+    google_maps_api_key: str = Field(
+        default="", validation_alias="GOOGLE_MAPS_API_KEY"
+    )
 
     openai_api_key: str = Field(default="", validation_alias="OPENAI_API_KEY")
     anthropic_api_key: str = Field(default="", validation_alias="ANTHROPIC_API_KEY")

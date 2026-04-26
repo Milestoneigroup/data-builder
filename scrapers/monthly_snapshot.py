@@ -1,6 +1,9 @@
 """Monthly venue snapshot: Places, Pollen, Air Quality, Claude sentiment -> Supabase venue_ratings.
 
-Run: ``python -m scrapers.monthly_snapshot`` (or ``python -m scrapers.monthly_snapshot --run-now`` when scheduler wrapper exists).
+Run once: ``python -m scrapers.monthly_snapshot --run-now``.
+
+On Railway (default): ``python -m scrapers.monthly_snapshot`` starts a **BlockingScheduler**
+(1st of month, 17:00 UTC ≈ 3:00 Sydney on the 1st across AEST/AEDT).
 
 Requires env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_KEY with service privileges),
 GOOGLE_PLACES_API_KEY, ANTHROPIC_API_KEY.
@@ -605,4 +608,23 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+
+    if "--run-now" in sys.argv:
+        main()
+    else:
+        from apscheduler.schedulers.blocking import BlockingScheduler
+        from apscheduler.triggers.cron import CronTrigger
+        import pytz
+
+        scheduler = BlockingScheduler(timezone=pytz.utc)
+        scheduler.add_job(
+            main,
+            CronTrigger(day=1, hour=17, minute=0),
+            id="monthly_venue_snapshot",
+        )
+        print(
+            "Scheduler started — monthly_snapshot runs 1st of each month at 3am Sydney time "
+            "(cron 17:00 UTC; use --run-now for immediate run)"
+        )
+        scheduler.start()
