@@ -66,4 +66,5 @@ Expanded `data/seed_major_events_AU.json` to **38** forward-dated, source-linked
 
 ## Commit
 
-`9415791bba4f93e09cb765afea6990db5c8aa25f`
+- Seed expansion commit: `9415791bba4f93e09cb765afea6990db5c8aa25f`
+- Branch tip (includes handoff hash fix): `aaddfc6f508f879adfe4f685941499e15e0b33ed`
