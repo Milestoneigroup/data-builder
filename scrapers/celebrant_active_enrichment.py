@@ -28,7 +28,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
-from urllib.parse import unquote, urljoin
+from urllib.parse import unquote, urljoin, urlparse
 
 import httpx
 import pandas as pd
@@ -71,15 +71,70 @@ TWS_REGIONS = (
 )
 TWS_DIR_TMPL = "https://theweddingsociety.co/directory/?type=marriage-celebrant&tab=search-form&region={region}"
 TWS_HOME = "https://theweddingsociety.co/"
-WL_URLS = (
-    "https://www.wedlockers.com.au/planning/nsw-marriage-celebrant/",
-    "https://www.wedlockers.com.au/planning/vic-marriage-celebrant/",
-    "https://www.wedlockers.com.au/planning/qld-marriage-celebrant/",
-    "https://www.wedlockers.com.au/planning/wa-marriage-celebrant/",
-    "https://www.wedlockers.com.au/planning/sa-marriage-celebrant/",
-    "https://www.wedlockers.com.au/planning/tas-marriage-celebrant/",
+WL_ORIGIN = "https://www.wedlockers.com.au"
+WL_CITY_URLS: tuple[str, ...] = (
+    f"{WL_ORIGIN}/marriage-celebrants/sydney/",
+    f"{WL_ORIGIN}/marriage-celebrants/melbourne/",
+    f"{WL_ORIGIN}/marriage-celebrants/brisbane/",
+    f"{WL_ORIGIN}/marriage-celebrants/perth/",
+    f"{WL_ORIGIN}/marriage-celebrants/adelaide/",
+    f"{WL_ORIGIN}/marriage-celebrants/canberra/",
+    f"{WL_ORIGIN}/marriage-celebrants/hobart/",
+    f"{WL_ORIGIN}/marriage-celebrants/gold-coast/",
+    f"{WL_ORIGIN}/marriage-celebrants/sunshine-coast/",
+    f"{WL_ORIGIN}/marriage-celebrants/newcastle/",
+    f"{WL_ORIGIN}/marriage-celebrants/wollongong/",
+    f"{WL_ORIGIN}/marriage-celebrants/geelong/",
 )
-WL_STATE = {"nsw": "NSW", "vic": "VIC", "qld": "QLD", "wa": "WA", "sa": "SA", "tas": "TAS"}
+WL_CITY_DEFAULT_STATE: dict[str, str] = {
+    "sydney": "NSW",
+    "melbourne": "VIC",
+    "brisbane": "QLD",
+    "perth": "WA",
+    "adelaide": "SA",
+    "canberra": "ACT",
+    "hobart": "TAS",
+    "gold-coast": "QLD",
+    "sunshine-coast": "QLD",
+    "newcastle": "NSW",
+    "wollongong": "NSW",
+    "geelong": "VIC",
+}
+AU_STATES = frozenset({"NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"})
+WL_SLUG_INTL_TOKENS = (
+    "bali",
+    "fiji",
+    "thailand",
+    "philippines",
+    "vietnam",
+    "indonesia",
+    "ireland",
+    "new-zealand",
+    "newzealand",
+    "scotland",
+    "england",
+    "wales",
+    "europe",
+    "asia",
+    "overseas",
+    "international",
+    "destination-",
+    "ibiza",
+    "greece",
+    "italy",
+    "france",
+    "spain",
+    "mexico",
+    "canada",
+    "india",
+    "sri-lanka",
+    "nepal",
+    "jamaica",
+    "uk-",
+    "usa",
+    "u-s-a",
+    "bali-",
+)
 MCA_BROWSE = "https://app.mycelebrantapp.com/browse"
 
 MCA_CSV_COLUMNS = (
@@ -94,19 +149,56 @@ MCA_CSV_COLUMNS = (
 )
 
 
-def _wedlockers_urls_for_states(states: list[str] | None) -> tuple[str, ...]:
-    """Subset of ``WL_URLS`` by lowercase state token (e.g. ``nsw``). ``None`` = all."""
-    if states is None:
-        return WL_URLS
-    want = {str(s).lower().strip() for s in states if str(s).strip()}
-    if not want:
-        return WL_URLS
-    picked: list[str] = []
-    for u in WL_URLS:
-        m = re.search(r"/planning/([a-z]+)-marriage", u, re.I)
-        if m and m.group(1).lower() in want:
-            picked.append(u)
-    return tuple(picked)
+def _wedlockers_city_slug_from_listing_url(listing_url: str) -> str:
+    parts = [p for p in urlparse(listing_url).path.strip("/").split("/") if p]
+    if len(parts) >= 2 and parts[0] == "marriage-celebrants":
+        return parts[1].lower().rstrip("/")
+    return ""
+
+
+def _wedlockers_profile_slug(profile_url: str) -> str:
+    parts = [p for p in urlparse(profile_url).path.strip("/").split("/") if p]
+    if len(parts) >= 2 and parts[0].lower() in ("b", "listing"):
+        return parts[1].lower()
+    return parts[-1].lower() if parts else ""
+
+
+def _wedlockers_slug_looks_non_au(slug: str) -> bool:
+    if not slug or len(slug) < 2:
+        return True
+    t = slug.lower()
+    return any(tok in t for tok in WL_SLUG_INTL_TOKENS)
+
+
+def _extract_au_state_from_wedlockers_html(s: BeautifulSoup) -> str:
+    text = s.get_text(" ", strip=True)
+    m = re.search(r"\b(NSW|VIC|QLD|SA|WA|TAS|ACT|NT)\b", text)
+    if m:
+        return m.group(1)
+    for long_name, abbr in (
+        ("New South Wales", "NSW"),
+        ("Queensland", "QLD"),
+        ("Victoria", "VIC"),
+        ("South Australia", "SA"),
+        ("Western Australia", "WA"),
+        ("Tasmania", "TAS"),
+        ("Northern Territory", "NT"),
+        ("Australian Capital Territory", "ACT"),
+    ):
+        if long_name.lower() in text.lower():
+            return abbr
+    return ""
+
+
+def _wedlockers_profile_name(s: BeautifulSoup, slug: str) -> str:
+    h1 = s.find("h1")
+    if h1:
+        t = h1.get_text(" ", strip=True)
+        if t:
+            return t[:200]
+    if s.title and s.title.string:
+        return s.title.string.split("|")[0].split("-")[0].strip()[:200]
+    return slug.replace("-", " ").title()[:200]
 
 TWS_REGION_TO_STATE = {
     "new-south-wales": "NSW",
@@ -331,50 +423,78 @@ def scrape_tws(client: httpx.Client, delay_s: float = 3.0) -> list[dict[str, Any
     return rows
 
 
+def _wedlockers_collect_profile_links(listing_html: str) -> list[str]:
+    """Absolute profile URLs: ``/b/{slug}`` or ``/listing/{slug}``."""
+    out: list[str] = []
+    seen: set[str] = set()
+    soup = BeautifulSoup(listing_html, "lxml")
+    for a in soup.find_all("a", href=True):
+        raw = (a.get("href") or "").strip()
+        if not raw or raw.startswith("#"):
+            continue
+        if not re.search(r"(^|/)(b|listing)/[^/?#]+", raw, re.I):
+            continue
+        full = urljoin(f"{WL_ORIGIN}/", raw)
+        if "wedlockers.com.au" not in full:
+            continue
+        path = urlparse(full).path.lower()
+        if "/b/" not in path and "/listing/" not in path:
+            continue
+        clean = full.split("#")[0].split("?")[0].rstrip("/") + "/"
+        if clean in seen:
+            continue
+        seen.add(clean)
+        out.append(clean)
+    return out
+
+
 def scrape_wedlockers(
     client: httpx.Client,
     delay_s: float = 3.0,
     *,
-    states: list[str] | None = None,
+    city_urls: list[str] | None = None,
 ) -> list[dict[str, Any]]:
+    """Scrape Wedlockers city directory pages; keep AU-state profiles only (see AU_STATES)."""
     rows: list[dict[str, Any]] = []
-    seen: set[str] = set()
-    for page_url in _wedlockers_urls_for_states(states):
-        mkey = re.search(r"/planning/([a-z]+)-marriage", page_url, re.I)
-        key = (mkey.group(1).lower() if mkey else "nsw")
-        state = WL_STATE.get(key, key.upper()[:3])
-        logging.info("Wedlockers %s", page_url)
+    seen_profiles: set[str] = set()
+    pages = list(city_urls) if city_urls else list(WL_CITY_URLS)
+
+    for page_url in pages:
+        city_slug = _wedlockers_city_slug_from_listing_url(page_url)
+        city_state = WL_CITY_DEFAULT_STATE.get(city_slug, "")
+        logging.info("Wedlockers city page %s", page_url)
         try:
             time.sleep(delay_s)
             r = client.get(page_url)
             r.raise_for_status()
         except Exception as e:  # noqa: BLE001
-            logging.warning("Wedlockers %s: %s", page_url, e)
+            logging.warning("Wedlockers listing %s: %s", page_url, e)
             continue
-        soup = BeautifulSoup(r.text, "lxml")
-        for a in soup.find_all("a", href=True):
-            h = a.get("href", "")
-            if not h.startswith("b/"):
+        for profile_url in _wedlockers_collect_profile_links(r.text):
+            if profile_url in seen_profiles:
                 continue
-            full = urljoin("https://www.wedlockers.com.au/", h)
-            if full in seen:
+            slug = _wedlockers_profile_slug(profile_url)
+            if _wedlockers_slug_looks_non_au(slug):
+                logging.debug("Wedlockers skip slug (intl heuristic): %s", slug)
                 continue
-            seen.add(full)
-            slug = h.replace("b/", "").split("?")[0].strip("/")
-            nm = slug.replace("-", " ").title()
-            rev = ""
-            profile_url = full.split("?")[0]
+            seen_profiles.add(profile_url)
             try:
                 time.sleep(delay_s)
                 pr = client.get(profile_url)
                 pr.raise_for_status()
-                ps = BeautifulSoup(pr.text, "lxml")
-                txt = ps.get_text(" ", strip=True)
-                m = re.search(r"(\d+)\s*reviews?", txt, re.I)
-                if m:
-                    rev = m.group(1)
-            except Exception:  # noqa: BLE001
-                pass
+            except Exception as e:  # noqa: BLE001
+                logging.warning("Wedlockers profile %s: %s", profile_url, e)
+                continue
+            ps = BeautifulSoup(pr.text, "lxml")
+            extracted = _extract_au_state_from_wedlockers_html(ps)
+            state = extracted if extracted in AU_STATES else city_state
+            if state not in AU_STATES:
+                logging.debug("Wedlockers skip (no AU state): %s", profile_url)
+                continue
+            txt = ps.get_text(" ", strip=True)
+            rm = re.search(r"(\d+)\s*reviews?", txt, re.I)
+            rev = rm.group(1) if rm else ""
+            nm = _wedlockers_profile_name(ps, slug)
             rows.append(
                 {
                     "name": nm,
@@ -702,7 +822,7 @@ def run_step1(
     skip_ew: bool = False,
     skip_afcc: bool = False,
     skip_mycelebrantapp: bool = False,
-    wedlockers_states: list[str] | None = None,
+    wedlockers_city_urls: list[str] | None = None,
     request_delay_s: float = 3.0,
     directory_browser_headers: bool = True,
 ) -> None:
@@ -735,7 +855,7 @@ def run_step1(
         pd.DataFrame(scrape_tws(client, delay_s=request_delay_s)).to_csv(tws_path, index=False)
         logging.info("Wrote TWS -> %s", tws_path)
         pd.DataFrame(
-            scrape_wedlockers(client, delay_s=request_delay_s, states=wedlockers_states)
+            scrape_wedlockers(client, delay_s=request_delay_s, city_urls=wedlockers_city_urls)
         ).to_csv(wl_path, index=False)
         logging.info("Wrote Wedlockers -> %s", wl_path)
         if not skip_mycelebrantapp:

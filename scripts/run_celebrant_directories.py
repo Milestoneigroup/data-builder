@@ -11,7 +11,6 @@ if __name__ == "__main__":
         skip_ew=True,
         skip_afcc=True,
         skip_mycelebrantapp=True,
-        wedlockers_states=["nsw"],
     )
     run_step2(output_file="data/celebrants_master_v3.csv")
     print("DONE — celebrants_master_v3.csv written")
