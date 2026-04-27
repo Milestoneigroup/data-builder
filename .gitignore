@@ -40,6 +40,7 @@ env.local
 # Local data drops (Excel, CSV, exports) — keep folder only
 data/*
 !data/.gitkeep
+!data/ew_celebrants.csv
 
 # Log files (keep logs/ directory via .gitkeep)
 logs/*
