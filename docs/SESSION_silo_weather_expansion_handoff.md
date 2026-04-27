@@ -87,7 +87,7 @@ git commit -m "feat(weather): expand SILO backfill to ~100 cells"
 git push origin feature/silo-weather-backfill
 ```
 
-- **Commit:** `dc564ec` (pushed to `origin/feature/silo-weather-backfill`).
+- **Commits (pushed to `origin/feature/silo-weather-backfill`):** `dc564ec` (feat: 100-cell seed + builder + handoff draft), `1cb7634` (docs: handoff commit hash).
 
 ## 5. SILO 100-CELL EXPANSION SUMMARY (fill post-run)
 
@@ -101,5 +101,5 @@ SILO 100-CELL EXPANSION SUMMARY
 - Destinations linked to cells: [N] / 414 active
 - Coverage gaps: [N] cells with <9000 days
 - Climate spot-checks: PASS / FAIL with brief note
-- Commit: [hash]
+- Commit: `1cb7634` (branch tip; feat in `dc564ec`)
 ```
