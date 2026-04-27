@@ -1,0 +1,12 @@
+[
+  {"coverage_label": "Greater Sydney Metro", "requested_lat": -33.815, "requested_lng": 151.001},
+  {"coverage_label": "Greater Melbourne Metro", "requested_lat": -37.8136, "requested_lng": 144.9631},
+  {"coverage_label": "Hunter Valley Wine Country", "requested_lat": -32.7796, "requested_lng": 151.29},
+  {"coverage_label": "Yarra Valley & Dandenong Ranges", "requested_lat": -37.65, "requested_lng": 145.55},
+  {"coverage_label": "Margaret River & South West WA", "requested_lat": -33.9556, "requested_lng": 115.0736},
+  {"coverage_label": "Sunshine Coast & Noosa", "requested_lat": -26.4, "requested_lng": 153.05},
+  {"coverage_label": "Whitsundays", "requested_lat": -20.27, "requested_lng": 148.72},
+  {"coverage_label": "Hobart & Southern Tasmania", "requested_lat": -42.8821, "requested_lng": 147.3272},
+  {"coverage_label": "Barossa Valley", "requested_lat": -34.5333, "requested_lng": 138.95},
+  {"coverage_label": "Byron Region (Northern Rivers)", "requested_lat": -28.75, "requested_lng": 153.45}
+]

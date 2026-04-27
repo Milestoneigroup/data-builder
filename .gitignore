@@ -41,6 +41,7 @@ env.local
 data/*
 !data/.gitkeep
 !data/ew_celebrants.csv
+!data/seed_weather_test_cells.json
 
 # Log files (keep logs/ directory via .gitkeep)
 logs/*
