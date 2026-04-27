@@ -431,8 +431,9 @@
   },
   {
     "coverage_label": "Gippsland Coast",
-    "requested_lat": -38.4,
-    "requested_lng": 147.5
+    "requested_lat": -37.876,
+    "requested_lng": 147.989,
+    "_seed_note": "Lakes Entrance — original centroid (-38.4, 147.5) was offshore in Bass Strait, returned 0% from SILO"
   },
   {
     "coverage_label": "Great Ocean Road and Surf Coast",

@@ -8,6 +8,11 @@ SILO CSV ``comment`` codes (verified against live ``DataDrillDataset.php`` respo
 ``RXNH`` → ``daily_rain``, ``max_temp``, ``min_temp``, ``rh_tmax``. (``RXNT`` returns ``et_tall_crop``, not humidity.)
 
 Fair use: 2s pause between cells; retries on 5xx/timeout with 2s/4s/8s backoff.
+
+If a seed row already exists in ``shared.ref_weather_grid_cells`` with the same
+``coverage_label`` and ``requested_lat`` / ``requested_lng`` (6 dp) and
+``total_observations`` meets the same 95% day threshold as a fresh run, that row
+is **skipped** (no SILO request, no sleep) so reruns only touch new or moved anchors.
 """
 
 from __future__ import annotations
@@ -161,6 +166,46 @@ def _coverage_ratio(unique_dates: set[date], start: date, finish: date) -> float
     return len(unique_dates) / float(exp)
 
 
+def _norm_coord6(v: float) -> float:
+    return round(float(v), 6)
+
+
+def _min_observations_for_skip(finish: date) -> int:
+    exp = _expected_days(START_DATE, finish)
+    return max(1, int(MIN_COVERAGE_RATIO * exp))
+
+
+def _fetch_existing_seed_observations(tbl_cells: Any, log: logging.Logger) -> dict[tuple[str, float, float], int]:
+    """(coverage_label lower, requested_lat, requested_lng) -> total_observations."""
+    out: dict[tuple[str, float, float], int] = {}
+    offset = 0
+    page = 1000
+    while True:
+        resp = (
+            tbl_cells.select("coverage_label,requested_lat,requested_lng,total_observations")
+            .range(offset, offset + page - 1)
+            .execute()
+        )
+        batch = getattr(resp, "data", None) or []
+        if not batch:
+            break
+        for row in batch:
+            lab = str(row.get("coverage_label") or "").strip().lower()
+            try:
+                rlat = float(row["requested_lat"])
+                rlng = float(row["requested_lng"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            tobs = int(row.get("total_observations") or 0)
+            key = (lab, _norm_coord6(rlat), _norm_coord6(rlng))
+            out[key] = max(out.get(key, 0), tobs)
+        if len(batch) < page:
+            break
+        offset += page
+    log.info("loaded %s existing grid cell seed keys from Supabase for skip check", len(out))
+    return out
+
+
 def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
@@ -193,10 +238,14 @@ def main() -> None:
     tbl_cells = supabase.schema("shared").table("ref_weather_grid_cells")
     tbl_daily = supabase.schema("shared").table("ref_weather_daily")
 
+    existing_obs = _fetch_existing_seed_observations(tbl_cells, log)
+    min_obs_skip = _min_observations_for_skip(finish)
+
     t0 = time.perf_counter()
     total_inserted = 0
     failed = 0
     processed = 0
+    skipped = 0
 
     with httpx.Client(headers={"User-Agent": settings.scraper_user_agent}) as http:
         for spec in cells:
@@ -205,6 +254,17 @@ def main() -> None:
             label = str(spec.get("coverage_label") or "").strip()
             req_lat = float(spec["requested_lat"])
             req_lng = float(spec["requested_lng"])
+            skip_key = (label.lower(), _norm_coord6(req_lat), _norm_coord6(req_lng))
+            prev_obs = existing_obs.get(skip_key)
+            if prev_obs is not None and prev_obs >= min_obs_skip:
+                log.info(
+                    "cell skip label=%r (already in Supabase: total_observations=%s >= %s)",
+                    label,
+                    prev_obs,
+                    min_obs_skip,
+                )
+                skipped += 1
+                continue
             cell_t0 = time.perf_counter()
             try:
                 csv_text = _fetch_silo_csv(http, email, req_lat, req_lng, START_DATE, finish)
@@ -292,8 +352,9 @@ def main() -> None:
 
     total_s = time.perf_counter() - t0
     log.info(
-        "TOTAL cells_ok=%s cells_failed=%s rows_upsert_batches=%s runtime=%.1fs",
+        "TOTAL cells_fetched_ok=%s cells_skipped=%s cells_failed=%s rows_upsert_batches=%s runtime=%.1fs",
         processed,
+        skipped,
         failed,
         total_inserted,
         total_s,

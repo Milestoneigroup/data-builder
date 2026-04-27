@@ -91,6 +91,9 @@ def _fetch_all_daily(supabase: Any) -> pd.DataFrame:
             supabase.schema("shared")
             .table("ref_weather_daily")
             .select("grid_cell_id,observation_date,daily_rain_mm,temp_max_c,temp_min_c,humidity_pct")
+            # Stable ordering is required for range() pagination; without it, PostgREST can
+            # repeat or omit rows across pages and corrupt climatology aggregates.
+            .order("weather_daily_id", desc=False)
             .range(offset, offset + page - 1)
             .execute()
         )

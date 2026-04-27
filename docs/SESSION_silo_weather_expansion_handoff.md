@@ -103,3 +103,83 @@ SILO 100-CELL EXPANSION SUMMARY
 - Climate spot-checks: PASS / FAIL with brief note
 - Commit: `1cb7634` (branch tip; feat in `dc564ec`)
 ```
+
+## 6. Gippsland Coast fix and 100-cell finalisation (2026-04-27)
+
+### 6.1 Seed change (`data/seed_weather_test_cells.json`)
+
+The **Gippsland Coast** anchor was moved from `(-38.4, 147.5)` to **Lakes Entrance** `(-37.876, 147.989)`. The old centroid sat offshore in Bass Strait; SILO DataDrill is land-only and returned **0%** day coverage. A `_seed_note` field on that JSON object documents the reason (ignored by the scraper).
+
+### 6.2 Backfill re-run (incremental)
+
+`silo_weather_backfill` now **skips** SILO HTTP when a row already exists in `shared.ref_weather_grid_cells` with the same `coverage_label` and requested coordinates (6 dp) and `total_observations` ≥ 95% of the expected calendar span. The second full-seed run therefore issued **one** SILO pull (Gippsland only) plus **99** skips (~11 s).
+
+### 6.3 Monthly refresh — stable pagination
+
+`silo_weather_monthly_refresh` previously paged `ref_weather_daily` with `.range()` and **no `ORDER BY`**, which can duplicate or omit rows under PostgREST. That skewed `ref_weather_monthly_stats` (e.g. Hunter February inflated). The fetch now uses **`.order("weather_daily_id")`** before each range window.
+
+### 6.4 Destinations
+
+`UPDATE shared.ref_destinations … SET grid_cell_id = (nearest active grid cell)` for active rows with `grid_cell_id IS NULL` was executed via `DATABASE_URL` (psycopg). Result: **414** linked, **0** unlinked.
+
+### 6.5 Validation query outputs (production snapshot)
+
+```
+UPDATE ref_destinations (grid_cell_id): rowcount = 0   -- second run: already linked
+
+COUNT ref_weather_daily: 961300
+COUNT ref_weather_grid_cells: 100
+COUNT grid_cells total_observations < 9000: 0
+DISTINCT monthly grid_cell_id: 100
+destinations linked: 414
+destinations unlinked: 0
+
+-- Hunter regression --
+(1, 72.71, 7.2)
+(2, 93.73, 8.5)
+(3, 95.72, 9.1)
+(4, 64.54, 6.5)
+(5, 42.25, 5.0)
+(6, 60.55, 5.8)
+(7, 35.22, 4.8)
+(8, 34.47, 4.3)
+(9, 40.89, 4.8)
+(10, 50.93, 6.1)
+(11, 76.98, 7.8)
+(12, 72.32, 7.3)
+
+-- Gippsland Coast monthly (Lakes Entrance anchor) --
+(1, 44.03, 5.9)
+(2, 50.69, 6.1)
+(3, 57.70, 6.7)
+(4, 63.72, 7.3)
+(5, 44.94, 7.1)
+(6, 75.01, 8.1)
+(7, 47.30, 7.2)
+(8, 53.96, 8.2)
+(9, 48.99, 7.5)
+(10, 61.27, 8.0)
+(11, 77.50, 8.2)
+(12, 66.92, 7.7)
+
+-- Gippsland Coast daily rows --
+gippsland_daily_rows: 9613
+```
+
+**Hunter regression:** PASS (February **~94 mm**, July **~35 mm**). **Gippsland:** **9,613** daily rows; winter/summer pattern plausible for East Gippsland coast.
+
+### 6.6 Final summary block
+
+```
+SILO 100-CELL BACKFILL — FINALISED
+- Total daily rows: 961300
+- Cells loaded: 100 / 100 (target: 100)
+- Coverage gaps: 0 cells under 9000 days
+- Monthly stats cells: 100 / 100
+- Destinations linked: 414 / 414
+- Destinations still unlinked: 0
+- Hunter regression: PASS (Feb ~94mm, Jul ~35mm)
+- Gippsland Coast (new coord) coverage: 9613 daily rows
+- Working tree clean: YES
+- Final commit: c56b6127013769796b67cc30b2fa8f5ae48f05d7
+```
