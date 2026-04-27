@@ -106,10 +106,9 @@ SELECT event_type, COUNT(*) FROM shared.ref_major_events GROUP BY 1;
 ## 8. Git state
 
 - Branch: `feature/busy-index-v1`
-- Commit: `138bf5f` (update if amended)
+- Commit: `f7786d5`
 - Remote: `https://github.com/Milestoneigroup/data-builder.git`
-
-Confirm push: `git push -u origin feature/busy-index-v1` (run from a machine with GitHub credentials).
+- Push: **done** — `feature/busy-index-v1` tracking `origin/feature/busy-index-v1`
 
 ## 9. Open question for Richard
 
