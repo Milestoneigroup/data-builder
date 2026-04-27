@@ -106,7 +106,7 @@ SELECT event_type, COUNT(*) FROM shared.ref_major_events GROUP BY 1;
 ## 8. Git state
 
 - Branch: `feature/busy-index-v1`
-- Latest commit: `a60ff83`
+- Latest commit: run `git rev-parse HEAD` on `feature/busy-index-v1` (tip moves with doc-only fixes)
 - Remote: `https://github.com/Milestoneigroup/data-builder.git`
 - Push: **done** — `feature/busy-index-v1` tracking `origin/feature/busy-index-v1`
 
