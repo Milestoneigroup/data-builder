@@ -1,4 +1,4 @@
-"""Railway job: refresh Wedlockers, Wedding Society, MyCelebrantApp; reuse EW CSV; skip AFCC (WAF)."""
+"""Railway job: scrape Easy Weddings + Wedlockers, TWS, MCA; skip AFCC (WAF)."""
 from __future__ import annotations
 
 import os
@@ -19,7 +19,7 @@ from scrapers.celebrant_active_enrichment import (  # noqa: E402
 if __name__ == "__main__":
     run_step1(
         ew_pages=15,
-        skip_ew=True,
+        skip_ew=False,
         skip_afcc=True,
     )
     stats, master = run_step2(output_file="data/celebrants_master_v3.csv")
