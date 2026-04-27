@@ -1,12 +1,502 @@
 [
-  {"coverage_label": "Greater Sydney Metro", "requested_lat": -33.815, "requested_lng": 151.001},
-  {"coverage_label": "Greater Melbourne Metro", "requested_lat": -37.8136, "requested_lng": 144.9631},
-  {"coverage_label": "Hunter Valley Wine Country", "requested_lat": -32.7796, "requested_lng": 151.29},
-  {"coverage_label": "Yarra Valley & Dandenong Ranges", "requested_lat": -37.65, "requested_lng": 145.55},
-  {"coverage_label": "Margaret River & South West WA", "requested_lat": -33.9556, "requested_lng": 115.0736},
-  {"coverage_label": "Sunshine Coast & Noosa", "requested_lat": -26.4, "requested_lng": 153.05},
-  {"coverage_label": "Whitsundays", "requested_lat": -20.27, "requested_lng": 148.72},
-  {"coverage_label": "Hobart & Southern Tasmania", "requested_lat": -42.8821, "requested_lng": 147.3272},
-  {"coverage_label": "Barossa Valley", "requested_lat": -34.5333, "requested_lng": 138.95},
-  {"coverage_label": "Byron Region (Northern Rivers)", "requested_lat": -28.75, "requested_lng": 153.45}
+  {
+    "coverage_label": "Canberra and ACT",
+    "requested_lat": -35.2809,
+    "requested_lng": 149.13
+  },
+  {
+    "coverage_label": "Albury-Wodonga (NSW Side)",
+    "requested_lat": -36.0737,
+    "requested_lng": 146.9135
+  },
+  {
+    "coverage_label": "Anna Bay and Stockton Sand Dunes",
+    "requested_lat": -32.7817,
+    "requested_lng": 152.0767
+  },
+  {
+    "coverage_label": "Ballina and Lennox Head",
+    "requested_lat": -28.8667,
+    "requested_lng": 153.5667
+  },
+  {
+    "coverage_label": "Bangalow and surrounds",
+    "requested_lat": -28.695,
+    "requested_lng": 153.51
+  },
+  {
+    "coverage_label": "Berry and Shoalhaven Heads",
+    "requested_lat": -34.8,
+    "requested_lng": 150.73
+  },
+  {
+    "coverage_label": "Blackheath and Medlow Bath",
+    "requested_lat": -33.6358,
+    "requested_lng": 150.2858
+  },
+  {
+    "coverage_label": "Blue Mountains and Surrounds",
+    "requested_lat": -33.7123,
+    "requested_lng": 150.3118
+  },
+  {
+    "coverage_label": "Bowral and Mittagong",
+    "requested_lat": -34.47,
+    "requested_lng": 150.425
+  },
+  {
+    "coverage_label": "Byron Bay township",
+    "requested_lat": -28.6474,
+    "requested_lng": 153.602
+  },
+  {
+    "coverage_label": "Byron Region (Northern Rivers)",
+    "requested_lat": -28.75,
+    "requested_lng": 153.45
+  },
+  {
+    "coverage_label": "Central West NSW Wine Regions",
+    "requested_lat": -32.95,
+    "requested_lng": 149.35
+  },
+  {
+    "coverage_label": "Cessnock and surrounds",
+    "requested_lat": -32.8333,
+    "requested_lng": 151.3558
+  },
+  {
+    "coverage_label": "Corowa and Federation Border",
+    "requested_lat": -36.001,
+    "requested_lng": 146.388
+  },
+  {
+    "coverage_label": "Greater Sydney Metro",
+    "requested_lat": -33.815,
+    "requested_lng": 151.001
+  },
+  {
+    "coverage_label": "Hunter Valley Wine Country",
+    "requested_lat": -32.7796,
+    "requested_lng": 151.29
+  },
+  {
+    "coverage_label": "Illawarra and Shoalhaven",
+    "requested_lat": -34.7,
+    "requested_lng": 150.75
+  },
+  {
+    "coverage_label": "Jervis Bay and Huskisson",
+    "requested_lat": -35.02,
+    "requested_lng": 150.66
+  },
+  {
+    "coverage_label": "Jindabyne and Lake Crackenback",
+    "requested_lat": -36.4167,
+    "requested_lng": 148.6167
+  },
+  {
+    "coverage_label": "Kangaroo Valley",
+    "requested_lat": -34.72,
+    "requested_lng": 150.55
+  },
+  {
+    "coverage_label": "Kiama and Gerringong",
+    "requested_lat": -34.7,
+    "requested_lng": 150.85
+  },
+  {
+    "coverage_label": "Lovedale and Rothbury",
+    "requested_lat": -32.72,
+    "requested_lng": 151.385
+  },
+  {
+    "coverage_label": "Moama",
+    "requested_lat": -36.1167,
+    "requested_lng": 144.75
+  },
+  {
+    "coverage_label": "Moss Vale and Berrima",
+    "requested_lat": -34.55,
+    "requested_lng": 150.37
+  },
+  {
+    "coverage_label": "Mudgee",
+    "requested_lat": -32.605,
+    "requested_lng": 149.595
+  },
+  {
+    "coverage_label": "Mullumbimby and Brunswick Heads",
+    "requested_lat": -28.548,
+    "requested_lng": 153.492
+  },
+  {
+    "coverage_label": "Murray River \u2014 NSW Side",
+    "requested_lat": -35.5,
+    "requested_lng": 146.5
+  },
+  {
+    "coverage_label": "Orange and Canobolas",
+    "requested_lat": -33.3,
+    "requested_lng": 149.105
+  },
+  {
+    "coverage_label": "Port Stephens",
+    "requested_lat": -32.72,
+    "requested_lng": 152.15
+  },
+  {
+    "coverage_label": "Robertson and surrounds",
+    "requested_lat": -34.5833,
+    "requested_lng": 150.6
+  },
+  {
+    "coverage_label": "Salamander Bay and Soldiers Point",
+    "requested_lat": -32.725,
+    "requested_lng": 152.085
+  },
+  {
+    "coverage_label": "Shellharbour",
+    "requested_lat": -34.5808,
+    "requested_lng": 150.8706
+  },
+  {
+    "coverage_label": "Snowy Mountains",
+    "requested_lat": -36.38,
+    "requested_lng": 148.38
+  },
+  {
+    "coverage_label": "South Coast NSW",
+    "requested_lat": -35.0276,
+    "requested_lng": 150.6716
+  },
+  {
+    "coverage_label": "Southern Highlands and Tablelands",
+    "requested_lat": -34.4847,
+    "requested_lng": 150.4176
+  },
+  {
+    "coverage_label": "Sydney CBD and Circular Quay",
+    "requested_lat": -33.8688,
+    "requested_lng": 151.2093
+  },
+  {
+    "coverage_label": "Sydney Eastern Suburbs",
+    "requested_lat": -33.88,
+    "requested_lng": 151.25
+  },
+  {
+    "coverage_label": "Sydney Inner West",
+    "requested_lat": -33.8947,
+    "requested_lng": 151.1466
+  },
+  {
+    "coverage_label": "Sydney Lower North Shore",
+    "requested_lat": -33.835,
+    "requested_lng": 151.231
+  },
+  {
+    "coverage_label": "Sydney Northern Beaches",
+    "requested_lat": -33.7506,
+    "requested_lng": 151.2882
+  },
+  {
+    "coverage_label": "Sydney Upper North Shore and Hills District",
+    "requested_lat": -33.72,
+    "requested_lng": 151.1
+  },
+  {
+    "coverage_label": "Thredbo Village",
+    "requested_lat": -36.5053,
+    "requested_lng": 148.3025
+  },
+  {
+    "coverage_label": "Tocumwal Riverside",
+    "requested_lat": -35.8107,
+    "requested_lng": 145.5681
+  },
+  {
+    "coverage_label": "Tomaree Headland and Fingal Bay",
+    "requested_lat": -32.7478,
+    "requested_lng": 152.1736
+  },
+  {
+    "coverage_label": "Wollongong and surrounds",
+    "requested_lat": -34.4278,
+    "requested_lng": 150.8931
+  },
+  {
+    "coverage_label": "Alice Springs and Surrounds",
+    "requested_lat": -23.698,
+    "requested_lng": 133.8807
+  },
+  {
+    "coverage_label": "Darwin and Top End",
+    "requested_lat": -12.4634,
+    "requested_lng": 130.8456
+  },
+  {
+    "coverage_label": "Uluru-Kata Tjuta and Red Centre",
+    "requested_lat": -25.3444,
+    "requested_lng": 131.0369
+  },
+  {
+    "coverage_label": "Atherton Tablelands",
+    "requested_lat": -17.2692,
+    "requested_lng": 145.5825
+  },
+  {
+    "coverage_label": "Beechmont, Lamington and Binna Burra",
+    "requested_lat": -28.13,
+    "requested_lng": 153.18
+  },
+  {
+    "coverage_label": "Brisbane Bayside and Redlands",
+    "requested_lat": -27.45,
+    "requested_lng": 153.2
+  },
+  {
+    "coverage_label": "Broadwater and Southport",
+    "requested_lat": -27.9675,
+    "requested_lng": 153.4125
+  },
+  {
+    "coverage_label": "Burleigh Heads and Palm Beach",
+    "requested_lat": -28.0889,
+    "requested_lng": 153.4517
+  },
+  {
+    "coverage_label": "Coolangatta and Kirra",
+    "requested_lat": -28.1694,
+    "requested_lng": 153.5361
+  },
+  {
+    "coverage_label": "Darling Downs and Toowoomba",
+    "requested_lat": -27.56,
+    "requested_lng": 151.95
+  },
+  {
+    "coverage_label": "Fraser Coast and K'gari",
+    "requested_lat": -25.3,
+    "requested_lng": 152.85
+  },
+  {
+    "coverage_label": "Gold Coast Hinterland \u2014 Springbrook and Currumbin Valley",
+    "requested_lat": -28.2056,
+    "requested_lng": 153.275
+  },
+  {
+    "coverage_label": "Gold Coast and Hinterland",
+    "requested_lat": -28.0167,
+    "requested_lng": 153.4
+  },
+  {
+    "coverage_label": "Granite Belt and Southern Downs",
+    "requested_lat": -28.65,
+    "requested_lng": 151.9333
+  },
+  {
+    "coverage_label": "Greater Brisbane Metro",
+    "requested_lat": -27.4698,
+    "requested_lng": 153.0251
+  },
+  {
+    "coverage_label": "Hamilton Island",
+    "requested_lat": -20.3469,
+    "requested_lng": 148.9531
+  },
+  {
+    "coverage_label": "Hervey Bay and Urangan",
+    "requested_lat": -25.2882,
+    "requested_lng": 152.8184
+  },
+  {
+    "coverage_label": "Highfields, Hampton and Crows Nest",
+    "requested_lat": -27.45,
+    "requested_lng": 151.95
+  },
+  {
+    "coverage_label": "Ipswich and Western Corridor",
+    "requested_lat": -27.615,
+    "requested_lng": 152.7608
+  },
+  {
+    "coverage_label": "Scenic Rim",
+    "requested_lat": -28.0,
+    "requested_lng": 153.05
+  },
+  {
+    "coverage_label": "Sunshine Coast & Noosa",
+    "requested_lat": -26.4,
+    "requested_lng": 153.05
+  },
+  {
+    "coverage_label": "Townsville and Magnetic Island",
+    "requested_lat": -19.259,
+    "requested_lng": 146.8169
+  },
+  {
+    "coverage_label": "Tropical North Queensland",
+    "requested_lat": -16.9186,
+    "requested_lng": 145.7781
+  },
+  {
+    "coverage_label": "Whitsundays",
+    "requested_lat": -20.27,
+    "requested_lng": 148.72
+  },
+  {
+    "coverage_label": "Adelaide Hills",
+    "requested_lat": -34.9667,
+    "requested_lng": 138.75
+  },
+  {
+    "coverage_label": "Barossa Valley",
+    "requested_lat": -34.5333,
+    "requested_lng": 138.95
+  },
+  {
+    "coverage_label": "Clare Valley",
+    "requested_lat": -33.8333,
+    "requested_lng": 138.6167
+  },
+  {
+    "coverage_label": "Flinders Ranges and Outback",
+    "requested_lat": -31.48,
+    "requested_lng": 138.59
+  },
+  {
+    "coverage_label": "Greater Adelaide Metro",
+    "requested_lat": -34.9285,
+    "requested_lng": 138.6007
+  },
+  {
+    "coverage_label": "Kangaroo Island",
+    "requested_lat": -35.7751,
+    "requested_lng": 137.2139
+  },
+  {
+    "coverage_label": "Limestone Coast and Coorong",
+    "requested_lat": -37.8333,
+    "requested_lng": 140.7833
+  },
+  {
+    "coverage_label": "McLaren Vale and Fleurieu Peninsula",
+    "requested_lat": -35.2167,
+    "requested_lng": 138.55
+  },
+  {
+    "coverage_label": "Cradle Mountain and North West",
+    "requested_lat": -41.6856,
+    "requested_lng": 145.9497
+  },
+  {
+    "coverage_label": "East Coast - Freycinet and Bay of Fires",
+    "requested_lat": -42.1244,
+    "requested_lng": 148.2939
+  },
+  {
+    "coverage_label": "Hobart & Southern Tasmania",
+    "requested_lat": -42.8821,
+    "requested_lng": 147.3272
+  },
+  {
+    "coverage_label": "Huon Valley and Channel Country",
+    "requested_lat": -43.0333,
+    "requested_lng": 147.05
+  },
+  {
+    "coverage_label": "Launceston and Tamar Valley",
+    "requested_lat": -41.4332,
+    "requested_lng": 147.1441
+  },
+  {
+    "coverage_label": "Tasmanian Midlands and Heritage Hamlets",
+    "requested_lat": -42.0239,
+    "requested_lng": 147.4917
+  },
+  {
+    "coverage_label": "Ballarat and Central Victoria Heritage",
+    "requested_lat": -37.5622,
+    "requested_lng": 143.8503
+  },
+  {
+    "coverage_label": "Daylesford and Macedon Ranges",
+    "requested_lat": -37.32,
+    "requested_lng": 144.35
+  },
+  {
+    "coverage_label": "Geelong and Bellarine Peninsula",
+    "requested_lat": -38.2,
+    "requested_lng": 144.65
+  },
+  {
+    "coverage_label": "Gippsland Coast",
+    "requested_lat": -38.4,
+    "requested_lng": 147.5
+  },
+  {
+    "coverage_label": "Great Ocean Road and Surf Coast",
+    "requested_lat": -38.4,
+    "requested_lng": 144.2
+  },
+  {
+    "coverage_label": "Greater Melbourne Metro",
+    "requested_lat": -37.8136,
+    "requested_lng": 144.9631
+  },
+  {
+    "coverage_label": "Mornington Peninsula",
+    "requested_lat": -38.35,
+    "requested_lng": 144.95
+  },
+  {
+    "coverage_label": "Murray River \u2014 VIC Side",
+    "requested_lat": -36.1333,
+    "requested_lng": 144.75
+  },
+  {
+    "coverage_label": "Phillip Island",
+    "requested_lat": -38.4831,
+    "requested_lng": 145.2389
+  },
+  {
+    "coverage_label": "Rutherglen and North East Victoria",
+    "requested_lat": -36.0556,
+    "requested_lng": 146.4611
+  },
+  {
+    "coverage_label": "Yarra Valley & Dandenong Ranges",
+    "requested_lat": -37.65,
+    "requested_lng": 145.55
+  },
+  {
+    "coverage_label": "Fremantle and Western Suburbs",
+    "requested_lat": -32.0569,
+    "requested_lng": 115.7439
+  },
+  {
+    "coverage_label": "Great Southern (Albany, Denmark, Mount Barker)",
+    "requested_lat": -35.0228,
+    "requested_lng": 117.8814
+  },
+  {
+    "coverage_label": "Greater Perth Metro",
+    "requested_lat": -31.9522,
+    "requested_lng": 115.8614
+  },
+  {
+    "coverage_label": "Margaret River & South West WA",
+    "requested_lat": -33.9556,
+    "requested_lng": 115.0736
+  },
+  {
+    "coverage_label": "Rottnest Island (Wadjemup)",
+    "requested_lat": -32.0056,
+    "requested_lng": 115.5172
+  },
+  {
+    "coverage_label": "Swan Valley and Perth Hills",
+    "requested_lat": -31.8181,
+    "requested_lng": 116.0267
+  }
 ]
