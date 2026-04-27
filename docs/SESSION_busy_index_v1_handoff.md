@@ -97,6 +97,74 @@ SELECT state_code, year, COUNT(*) FROM shared.ref_public_holidays GROUP BY 1,2 O
 SELECT event_type, COUNT(*) FROM shared.ref_major_events GROUP BY 1;
 ```
 
+<<<<<<< HEAD
+=======
+### 6b. Post-load validation capture (project `cxifxnsbaknjwtlstsly`, run date **2026-04-27**)
+
+Loader: `python -m scrapers.load_busy_index_seeds` (HTTP 201 upserts). SQL executed via `psycopg` + `DATABASE_URL` (same database as Supabase).
+
+**School holidays — counts per state/year**
+
+| state_code | year | holiday_breaks |
+|------------|------|-----------------|
+| ACT | 2026 | 3 |
+| ACT | 2027 | 4 |
+| NSW | 2026 | 3 |
+| NSW | 2027 | 4 |
+| NT | 2026 | 3 |
+| NT | 2027 | 4 |
+| QLD | 2026 | 3 |
+| QLD | 2027 | 4 |
+| SA | 2026 | 3 |
+| SA | 2027 | 4 |
+| TAS | 2026 | 3 |
+| TAS | 2027 | 3 |
+| VIC | 2026 | 3 |
+| VIC | 2027 | 4 |
+| WA | 2026 | 3 |
+| WA | 2027 | 4 |
+
+**Public holidays — counts per state/year**
+
+| state_code | year | public_holidays |
+|------------|------|-----------------|
+| ACT | 2026 | 1 |
+| NSW | 2026 | 6 |
+| NT | 2026 | 1 |
+| QLD | 2026 | 2 |
+| SA | 2026 | 1 |
+| TAS | 2026 | 1 |
+| VIC | 2026 | 2 |
+| WA | 2026 | 1 |
+
+**Major events — by `event_type`**
+
+| event_type | count |
+|------------|-------|
+| festival | 1 |
+| sport | 2 |
+
+**Forward-only (`< CURRENT_DATE`)**
+
+| check | count |
+|-------|-------|
+| `ref_school_holidays` end_date | **0** |
+| `ref_public_holidays` observed_date | **0** |
+| `ref_major_events` end_date | **0** |
+
+**`v_busy_signal_daily` — VIC `2026-11-03`**
+
+| state_code | observation_date | school_holiday_active | public_holiday_active | public_holiday_name | major_events_count |
+|------------|------------------|------------------------|------------------------|---------------------|--------------------|
+| VIC | 2026-11-03 | false | **true** | Melbourne Cup | **1** |
+
+**`v_busy_signal_daily` — NSW `2026-12-31`**
+
+| state_code | observation_date | school_holiday_active | school_holiday_label | public_holiday_active | major_events_count |
+|------------|------------------|------------------------|----------------------|------------------------|--------------------|
+| NSW | 2026-12-31 | **true** | Summer Break | false | 0 |
+
+>>>>>>> f9363f7 (feat(busy-index): migration 014 applied, seeds loaded, validated)
 ## 7. Coverage gaps
 
 - **Public holidays:** Seed is a minimal forward subset, not a full Fair Work extract per state/year.
