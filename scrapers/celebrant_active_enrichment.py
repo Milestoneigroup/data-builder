@@ -213,6 +213,184 @@ TWS_REGION_TO_STATE = {
 
 DEST_KW = ("travel", "overseas", "destination", "elope", "international", "abroad", "worldwide", "fly to")
 
+# Columns accepted by ``public.celebrants`` upsert from directory master rows (003 + 010 + additive).
+_CELEBRANTS_UPSERT_COLS: tuple[str, ...] = (
+    "celebrant_id",
+    "brand_id",
+    "full_name",
+    "ag_display_name",
+    "title",
+    "email",
+    "phone",
+    "state",
+    "address_text",
+    "suburb",
+    "postcode",
+    "website",
+    "registration_date",
+    "register_class",
+    "status",
+    "unavailability_text",
+    "ceremony_type",
+    "data_source",
+    "abia_winner",
+    "abia_awards_text",
+    "vibe",
+    "style_description",
+    "service_area_notes",
+    "min_price_aud",
+    "max_price_aud",
+    "years_experience",
+    "estimated_ceremonies",
+    "languages_non_english",
+    "instagram_handle_or_url",
+    "facebook_url",
+    "phone_from_website",
+    "celebrant_institute_member",
+    "joshua_withers_mentioned",
+    "data_quality_score",
+    "merge_fuzzy_score",
+    "is_standalone_award_entry",
+    "google_place_id",
+    "google_rating",
+    "google_review_count",
+    "website_from_places",
+    "phone_from_places",
+    "last_website_enrich_at",
+    "last_places_enrich_at",
+    "ag_scrape_page",
+    "ag_scrape_index",
+    "import_notes",
+    "pds_ack",
+    "insurance_notes",
+    "public_profile_url",
+    "linkedin_url",
+    "raw_address_cell",
+    "last_updated_source",
+    "content_tier",
+    "is_active_market",
+    "active_signal_sources",
+    "directory_listing_count",
+    "easy_weddings_profile_url",
+    "easy_weddings_rating",
+    "easy_weddings_review_count",
+    "easy_weddings_price_from",
+    "afcc_member",
+    "afcc_profile_url",
+    "wedding_society_profile_url",
+    "wedlockers_profile_url",
+    "mycelebrantapp_profile_url",
+    "is_destination_specialist",
+    "celebrant_quality_score",
+    "google_maps_url",
+    "google_address",
+    "lat",
+    "lng",
+    "photo_ref_1",
+    "photo_ref_2",
+    "photo_ref_3",
+    "places_match_confidence",
+    "places_enriched_date",
+    "google_phone",
+    "ag_registered",
+    "website_from_google",
+)
+_CELEBRANTS_UPSERT_BATCH = 200
+
+
+def _clean_supabase_val(v: Any) -> Any:
+    if v is None or (isinstance(v, float) and pd.isna(v)):
+        return None
+    s = str(v).strip()
+    if s == "" or s.lower() == "nan":
+        return None
+    return s
+
+
+def _row_to_celebrant_upsert_dict(row: pd.Series) -> dict[str, Any]:
+    rec: dict[str, Any] = {}
+    for c in _CELEBRANTS_UPSERT_COLS:
+        raw = row[c] if c in row.index else None
+        if c == "is_active_market":
+            rec[c] = str(raw).strip().lower() in ("true", "1", "yes")
+            continue
+        if c in ("afcc_member", "is_destination_specialist"):
+            rec[c] = str(raw).strip().lower() in ("true", "1", "yes")
+            continue
+        if c == "directory_listing_count":
+            try:
+                rec[c] = int(float(str(raw or "0")))
+            except (TypeError, ValueError):
+                rec[c] = 0
+            continue
+        if c in ("easy_weddings_review_count", "easy_weddings_rating", "celebrant_quality_score"):
+            cl = _clean_supabase_val(raw)
+            if cl is None:
+                rec[c] = None
+            else:
+                rec[c] = cl
+            continue
+        if c in ("lat", "lng"):
+            cl = _clean_supabase_val(raw)
+            if cl is None or str(cl).upper() == "VERIFY_REQUIRED":
+                rec[c] = None
+            else:
+                try:
+                    rec[c] = float(cl)
+                except (TypeError, ValueError):
+                    rec[c] = None
+            continue
+        if c == "places_enriched_date":
+            cl = _clean_supabase_val(raw)
+            if cl and len(str(cl)) >= 10:
+                rec[c] = str(cl)[:10]
+            else:
+                rec[c] = None
+            continue
+        cl = _clean_supabase_val(raw)
+        if cl is None:
+            rec[c] = VERIFY
+        else:
+            rec[c] = cl
+    return rec
+
+
+def upsert_active_celebrants_to_supabase(master: pd.DataFrame) -> int:
+    """Upsert rows with ``is_active_market=True`` to ``public.celebrants`` (service role)."""
+    try:
+        from data_builder.config import get_settings
+    except ImportError:
+        logging.warning("data_builder.config missing; skip Supabase upsert")
+        return 0
+    st = get_settings()
+    url = (st.supabase_url or "").strip()
+    key = (st.supabase_service_role_key or "").strip()
+    if not url or not key:
+        logging.warning("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set; skip active upsert")
+        return 0
+    mask = master["is_active_market"].astype(str).str.lower().isin(("true", "1", "yes"))
+    sub = master.loc[mask]
+    if sub.empty:
+        logging.info("No is_active_market rows to upsert")
+        return 0
+    from supabase import create_client
+
+    client = create_client(url, key)
+    n_ok = 0
+    records: list[dict[str, Any]] = []
+    for _, row in sub.iterrows():
+        records.append(_row_to_celebrant_upsert_dict(row))
+    for i in range(0, len(records), _CELEBRANTS_UPSERT_BATCH):
+        batch = records[i : i + _CELEBRANTS_UPSERT_BATCH]
+        try:
+            client.table("celebrants").upsert(batch, on_conflict="celebrant_id").execute()
+            n_ok += len(batch)
+        except Exception as e:  # noqa: BLE001
+            logging.exception("Supabase upsert batch failed: %s", e)
+            raise
+    logging.info("Supabase upsert: %s active celebrant rows", n_ok)
+    return n_ok
+
 
 def _client(*, directory_browser_headers: bool = False) -> httpx.Client:
     h: dict[str, str] = {"User-Agent": USER_AGENT, "Accept": "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8"}
@@ -875,8 +1053,13 @@ def run_step2(
     tws_path: Path | str | None = None,
     wl_path: Path | str | None = None,
     mca_path: Path | str | None = None,
-) -> tuple[XrefStats, pd.DataFrame]:
-    """Cross-reference directory CSVs to AG master; write ``celebrants_master_v*.csv``."""
+    upsert_active_to_supabase: bool = False,
+) -> tuple[XrefStats, pd.DataFrame, int]:
+    """Cross-reference directory CSVs to AG master; write ``celebrants_master_v*.csv``.
+
+    When ``upsert_active_to_supabase`` is True, upserts ``is_active_market`` rows to ``public.celebrants``.
+    Returns ``(stats, master_df, upserted_count)``.
+    """
     _setup_log()
     data = _ROOT / "data"
     m1 = Path(master_v1) if master_v1 else data / "celebrants_master_v1.csv"
@@ -910,7 +1093,10 @@ def run_step2(
     m2 = pd.read_csv(out, dtype=str, keep_default_na=False)
     print_step2_summary(stats, m2)
     print_output_summary(m2)
-    return stats, m2
+    n_up = 0
+    if upsert_active_to_supabase:
+        n_up = upsert_active_celebrants_to_supabase(m2)
+    return stats, m2, n_up
 
 
 def run_step3_places(master_v2: Path, threshold_fuzzy: int = 60) -> None:
@@ -1001,7 +1187,7 @@ def main() -> int:
         if not master_v1.is_file():
             print(f"ERROR: missing {master_v1}", file=sys.stderr)
             return 1
-        run_step2(output_file=master_v2)
+        run_step2(output_file=master_v2, upsert_active_to_supabase=False)
 
     if args.step3:
         run_step3_places(master_v2)
