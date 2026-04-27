@@ -1,9 +1,10 @@
 """Monthly venue snapshot: Places, Pollen, Air Quality, Claude sentiment -> Supabase venue_ratings.
 
-Run once: ``python -m scrapers.monthly_snapshot --run-now``.
+Run once: ``python -m scrapers.monthly_snapshot --run-now`` (venue snapshot only).
 
-On Railway (default): ``python -m scrapers.monthly_snapshot`` starts a **BlockingScheduler**
-(1st of month, 17:00 UTC ≈ 3:00 Sydney on the 1st across AEST/AEDT).
+On Railway (default): ``python -m scrapers.monthly_snapshot`` starts a **BlockingScheduler**:
+* Monthly: venue snapshot, 1st of month, 17:00 UTC
+* Quarterly: :mod:`scrapers.afcc_profile_scraper` (5th of Jan/Apr/Jul/Oct, 18:00 UTC)
 
 Requires env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_KEY with service privileges),
 GOOGLE_PLACES_API_KEY or GOOGLE_MAPS_API_KEY, ANTHROPIC_API_KEY.
@@ -633,8 +634,24 @@ if __name__ == "__main__":
             CronTrigger(day=1, hour=17, minute=0),
             id="monthly_venue_snapshot",
         )
+
+        def _afcc_quarterly() -> None:
+            try:
+                from scrapers import afcc_profile_scraper
+
+                afcc_profile_scraper.main()
+            except Exception:  # noqa: BLE001
+                LOG.exception("afcc_profile_scraper quarterly job failed")
+
+        scheduler.add_job(
+            _afcc_quarterly,
+            CronTrigger(month="1,4,7,10", day=5, hour=18, minute=0),
+            id="quarterly_afcc_profile_scrape",
+        )
         print(
-            "Scheduler started — monthly_snapshot runs 1st of each month at 3am Sydney time "
-            "(cron 17:00 UTC; use --run-now for immediate run)"
+            "Scheduler started — monthly_snapshot: 1st, 17:00 UTC; "
+            "afcc profiles: 5th Jan/Apr/Jul/Oct, 18:00 UTC. "
+            "Use --run-now for an immediate venue snapshot, or: "
+            "python -m scrapers.afcc_profile_scraper --run-now for AFCC."
         )
         scheduler.start()
