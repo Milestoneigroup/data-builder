@@ -1,24 +1,23 @@
 """Australian wedding influencer / content source discovery via Claude web search.
 
-Loads existing homepage URLs for deduplication, runs fixed SERP-style queries through
-the Anthropic Messages API with the web_search tool, normalises rows to the directory
-schema, and appends new rows to ``data/influencer_discovered_new.csv``.
+Loads existing homepage URLs from ``shared.ref_influencers`` (plus optional
+``data/influencer_existing_urls.txt``) for deduplication, runs 52 fixed queries through
+the Anthropic Messages API with the web_search tool, appends new rows to
+``data/influencer_discovered_new.csv``, and **upserts** new sources into
+``shared.ref_influencers`` (``discovery_source`` = ``auto_discovery_<date>``,
+``data_confidence`` = ``low``).
 
 Examples
 --------
-  # Build ``data/influencer_existing_urls.txt`` from your 178-row directory export:
-  python scrapers/influencer_discovery.py --bootstrap-from-csv data/influencer_directory.csv --url-column URL
-
   # Smoke test (first query only):
   python scrapers/influencer_discovery.py --limit-queries 1
 
-  # Full overnight run (52 queries):
+  # Full run (52 queries):
   python scrapers/influencer_discovery.py
 
-Requires: ANTHROPIC_API_KEY. Optional: ANTHROPIC_MODEL (must support web search; e.g.
-claude-sonnet-4-5-20250929 or a Sonnet/Opus 4.6+ build per Anthropic docs).
-
-Does not write to Supabase — manual review only.
+Requires: ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_KEY
+with service privileges) for dedupe + inserts. Optional: ANTHROPIC_MODEL (must
+support web search).
 """
 
 from __future__ import annotations
@@ -385,6 +384,13 @@ def run(
     from anthropic import Anthropic
 
     from data_builder.config import get_settings
+    from supabase import create_client
+
+    from scrapers.load_influencers_supabase import (
+        fetch_url_to_source_id,
+        influencer_rec_from_discovery_row,
+        upsert_single_influencer,
+    )
 
     settings = get_settings()
     api_key = (settings.anthropic_api_key or os.getenv("ANTHROPIC_API_KEY") or "").strip()
@@ -393,15 +399,28 @@ def run(
 
     model = (os.getenv("ANTHROPIC_MODEL") or "claude-sonnet-4-5-20250929").strip()
 
+    sb_url = (settings.supabase_url or "").strip()
+    sb_key = (settings.supabase_service_role_key or settings.supabase_key or "").strip()
+    sb_client = create_client(sb_url, sb_key) if sb_url and sb_key else None
+    if sb_client is None:
+        raise SystemExit("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_KEY) are required.")
+
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    existing = load_existing_urls(EXISTING_URLS_PATH)
+    existing: set[str] = set(load_existing_urls(EXISTING_URLS_PATH))
+    url_map = fetch_url_to_source_id(sb_client)
+    existing |= set(url_map.keys())
     if not existing and not allow_empty_existing:
         raise SystemExit(
-            f"No URLs loaded from {EXISTING_URLS_PATH}. "
-            "Export your 178 directory URLs (one per line) or run with:\n"
-            "  python scrapers/influencer_discovery.py --bootstrap-from-csv path/to/directory.csv --url-column URL\n"
-            "Or pass --allow-empty-existing to dedupe only within this run (not recommended)."
+            f"No URLs loaded from Supabase or {EXISTING_URLS_PATH}. "
+            "Load influencers first, or pass --allow-empty-existing (not recommended)."
         )
+
+    try:
+        EXISTING_URLS_PATH.parent.mkdir(parents=True, exist_ok=True)
+        EXISTING_URLS_PATH.write_text("\n".join(sorted(existing)) + ("\n" if existing else ""), encoding="utf-8")
+        log.info("Synced %s URL keys to %s", len(existing), EXISTING_URLS_PATH)
+    except Exception as e:  # noqa: BLE001
+        log.warning("Could not write %s: %s", EXISTING_URLS_PATH, e)
 
     hint_lines = sorted(existing)[:80]
     existing_hint = "\n".join(hint_lines) if hint_lines else "(none — directory empty)"
@@ -409,6 +428,7 @@ def run(
     seen: set[str] = set(existing)
     dupes_session = 0
     new_rows: list[dict[str, str]] = []
+    supabase_inserts = 0
 
     if resume and OUTPUT_CSV_PATH.is_file():
         seen |= _load_output_url_keys(OUTPUT_CSV_PATH)
@@ -425,6 +445,7 @@ def run(
                 w.writeheader()
 
     today = date.today().isoformat()
+    discovery_tag = f"auto_discovery_{today}"
     client = Anthropic(api_key=api_key, timeout=_anthropic_timeout_s())
     queries = QUERIES[: limit_queries if limit_queries else len(QUERIES)]
     total_q = len(queries)
@@ -473,6 +494,13 @@ def run(
                 continue
             seen.add(url_key)
             new_rows.append(row)
+            try:
+                rec = influencer_rec_from_discovery_row(row, discovery_source=discovery_tag)
+                kind, _ = upsert_single_influencer(sb_client, rec, url_map)
+                if kind == "insert":
+                    supabase_inserts += 1
+            except Exception as e:  # noqa: BLE001
+                log.error("Supabase upsert failed for %s: %s", url_key, e)
             trust_counts[row["trust_level"]] += 1
             type_counts[row["source_type"]] += 1
             for p in re.split(r"[,;]+", row["states"]):
@@ -514,6 +542,12 @@ def run(
     )
     print(summary, flush=True)
     log.info(summary.strip())
+    print(f"New sources added to Supabase: {supabase_inserts}", flush=True)
+    log.info("New sources added to Supabase: %s", supabase_inserts)
+    try:
+        EXISTING_URLS_PATH.write_text("\n".join(sorted(seen)) + ("\n" if seen else ""), encoding="utf-8")
+    except Exception as e:  # noqa: BLE001
+        log.warning("Could not refresh %s: %s", EXISTING_URLS_PATH, e)
 
 
 def main() -> None:

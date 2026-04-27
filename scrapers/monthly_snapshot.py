@@ -2,9 +2,12 @@
 
 Run once: ``python -m scrapers.monthly_snapshot --run-now`` (venue snapshot only).
 
-On Railway (default): ``python -m scrapers.monthly_snapshot`` starts a **BlockingScheduler**:
-* Monthly: venue snapshot, 1st of month, 17:00 UTC
-* Quarterly: :mod:`scrapers.afcc_profile_scraper` (5th of Jan/Apr/Jul/Oct, 18:00 UTC)
+On Railway (default): ``python -m scrapers.monthly_snapshot`` starts a **BlockingScheduler** (UTC):
+
+* **1st** 17:00 — venue snapshot (Places, pollen, AQ, sentiment) → ``venue_ratings``
+* **5th** 18:00 — influencer enrichment (:mod:`scrapers.influencer_enrichment`)
+* **6th** 18:00 — influencer discovery (:mod:`scrapers.influencer_discovery`)
+* **Quarterly** (Jan/Apr/Jul/Oct **5th** 17:00) — AFCC profiles (:mod:`scrapers.afcc_profile_scraper`)
 
 Requires env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_KEY with service privileges),
 GOOGLE_PLACES_API_KEY or GOOGLE_MAPS_API_KEY, ANTHROPIC_API_KEY.
@@ -643,15 +646,41 @@ if __name__ == "__main__":
             except Exception:  # noqa: BLE001
                 LOG.exception("afcc_profile_scraper quarterly job failed")
 
+        def _influencer_enrichment_job() -> None:
+            try:
+                from scrapers.influencer_enrichment import main as inf_main
+
+                inf_main()
+            except Exception:  # noqa: BLE001
+                LOG.exception("influencer_enrichment monthly job failed")
+
+        def _influencer_discovery_job() -> None:
+            try:
+                from scrapers.influencer_discovery import main as disc_main
+
+                disc_main()
+            except Exception:  # noqa: BLE001
+                LOG.exception("influencer_discovery monthly job failed")
+
         scheduler.add_job(
             _afcc_quarterly,
-            CronTrigger(month="1,4,7,10", day=5, hour=18, minute=0),
+            CronTrigger(month="1,4,7,10", day=5, hour=17, minute=0),
             id="quarterly_afcc_profile_scrape",
         )
+        scheduler.add_job(
+            _influencer_enrichment_job,
+            CronTrigger(day=5, hour=18, minute=0),
+            id="monthly_influencer_enrichment",
+        )
+        scheduler.add_job(
+            _influencer_discovery_job,
+            CronTrigger(day=6, hour=18, minute=0),
+            id="monthly_influencer_discovery",
+        )
         print(
-            "Scheduler started — monthly_snapshot: 1st, 17:00 UTC; "
-            "afcc profiles: 5th Jan/Apr/Jul/Oct, 18:00 UTC. "
-            "Use --run-now for an immediate venue snapshot, or: "
-            "python -m scrapers.afcc_profile_scraper --run-now for AFCC."
+            "Scheduler started (UTC): venue snapshot 1st 17:00; "
+            "influencer enrichment 5th 18:00; influencer discovery 6th 18:00; "
+            "AFCC profiles 5th Jan/Apr/Jul/Oct 17:00 (before influencer enrichment at 18:00). "
+            "Use --run-now for an immediate venue snapshot."
         )
         scheduler.start()
