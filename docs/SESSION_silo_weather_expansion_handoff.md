@@ -181,5 +181,5 @@ SILO 100-CELL BACKFILL — FINALISED
 - Hunter regression: PASS (Feb ~94mm, Jul ~35mm)
 - Gippsland Coast (new coord) coverage: 9613 daily rows
 - Working tree clean: YES
-- Final commit: c56b6127013769796b67cc30b2fa8f5ae48f05d7
+- Final commit: 2f3c7a583419d2464d9cb271121437716982bef2
 ```
