@@ -1,0 +1,53 @@
+[
+  {
+    "event_slug": "vivid-sydney-2026",
+    "event_name": "Vivid Sydney",
+    "event_type": "festival",
+    "state_code": "NSW",
+    "lga_or_area": "City of Sydney",
+    "event_lat": -33.861,
+    "event_lng": 151.211,
+    "start_date": "2026-05-22",
+    "end_date": "2026-06-13",
+    "is_recurring_annual": true,
+    "expected_visitors_label": "millions",
+    "notes": "Light festival across Sydney CBD and harbour precincts.",
+    "data_source": "Destination NSW (event operator site)",
+    "source_url": "https://www.vividsydney.com/",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "event_slug": "australian-open-2027",
+    "event_name": "Australian Open",
+    "event_type": "sport",
+    "state_code": "VIC",
+    "lga_or_area": "Melbourne Park",
+    "event_lat": -37.822,
+    "event_lng": 144.978,
+    "start_date": "2027-01-11",
+    "end_date": "2027-01-31",
+    "is_recurring_annual": true,
+    "expected_visitors_label": "hundreds_of_thousands",
+    "notes": "Grand Slam tennis; 2027 dates per Tennis Australia announcement.",
+    "data_source": "Tennis Australia",
+    "source_url": "https://ausopen.com/articles/news/australian-open-2027-dates-announced",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "event_slug": "melbourne-cup-day-2026",
+    "event_name": "Melbourne Cup Day",
+    "event_type": "sport",
+    "state_code": "VIC",
+    "lga_or_area": "City of Melbourne",
+    "event_lat": -37.787,
+    "event_lng": 144.907,
+    "start_date": "2026-11-03",
+    "end_date": "2026-11-03",
+    "is_recurring_annual": true,
+    "expected_visitors_label": "tens_of_thousands",
+    "notes": "Public holiday race day; metropolitan Melbourne.",
+    "data_source": "Fair Work Ombudsman (public holiday listing)",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  }
+]

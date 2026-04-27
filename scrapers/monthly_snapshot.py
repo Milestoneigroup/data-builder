@@ -664,6 +664,17 @@ if __name__ == "__main__":
             CronTrigger(day=6, hour=18, minute=0),
             id="monthly_influencer_discovery",
         )
+        # Busy Index v1: annual calendar refresh (stub). Leave disabled until v1.1+.
+        # def _busy_index_annual_stub() -> None:
+        #     from scrapers import refresh_busy_index
+        #
+        #     refresh_busy_index.main()
+        #
+        # scheduler.add_job(
+        #     _busy_index_annual_stub,
+        #     CronTrigger(month="7", day=1, hour=6, minute=0),
+        #     id="annual_busy_index_refresh_stub",
+        # )
         print(
             "Scheduler started (UTC): venue snapshot 1st 17:00; "
             "influencer enrichment 5th 18:00; influencer discovery 6th 18:00; "

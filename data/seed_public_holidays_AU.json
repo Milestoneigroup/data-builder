@@ -1,0 +1,152 @@
+[
+  {
+    "state_code": "NSW",
+    "year": 2026,
+    "holiday_name": "Anzac Day \u2014 additional public holiday",
+    "observed_date": "2026-04-27",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NSW",
+    "year": 2026,
+    "holiday_name": "King's Birthday",
+    "observed_date": "2026-06-08",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NSW",
+    "year": 2026,
+    "holiday_name": "Labour Day",
+    "observed_date": "2026-10-05",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NSW",
+    "year": 2026,
+    "holiday_name": "Christmas Day",
+    "observed_date": "2026-12-25",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NSW",
+    "year": 2026,
+    "holiday_name": "Boxing Day",
+    "observed_date": "2026-12-26",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NSW",
+    "year": 2026,
+    "holiday_name": "Additional public holiday for Boxing Day",
+    "observed_date": "2026-12-28",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "VIC",
+    "year": 2026,
+    "holiday_name": "Melbourne Cup",
+    "observed_date": "2026-11-03",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "VIC",
+    "year": 2026,
+    "holiday_name": "King's Birthday",
+    "observed_date": "2026-06-08",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "QLD",
+    "year": 2026,
+    "holiday_name": "King's Birthday",
+    "observed_date": "2026-10-05",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "QLD",
+    "year": 2026,
+    "holiday_name": "Royal Queensland Show (Brisbane area only)",
+    "observed_date": "2026-08-12",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "WA",
+    "year": 2026,
+    "holiday_name": "King's Birthday",
+    "observed_date": "2026-09-28",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "SA",
+    "year": 2026,
+    "holiday_name": "King's Birthday",
+    "observed_date": "2026-06-08",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "TAS",
+    "year": 2026,
+    "holiday_name": "Recreation Day",
+    "observed_date": "2026-11-02",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "ACT",
+    "year": 2026,
+    "holiday_name": "Reconciliation Day",
+    "observed_date": "2026-06-01",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NT",
+    "year": 2026,
+    "holiday_name": "Picnic Day",
+    "observed_date": "2026-08-03",
+    "is_national": false,
+    "data_source": "Fair Work Ombudsman",
+    "source_url": "https://www.fairwork.gov.au/employment-conditions/public-holidays/2026-public-holidays",
+    "verified_at": "2026-04-27"
+  }
+]

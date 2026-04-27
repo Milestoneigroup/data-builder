@@ -1,0 +1,552 @@
+[
+  {
+    "state_code": "NSW",
+    "year": 2026,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2026-07-06",
+    "end_date": "2026-07-17",
+    "data_source": "NSW Department of Education",
+    "source_url": "https://www.education.nsw.gov.au/schooling/calendars/2026",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NSW",
+    "year": 2026,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2026-09-28",
+    "end_date": "2026-10-09",
+    "data_source": "NSW Department of Education",
+    "source_url": "https://www.education.nsw.gov.au/schooling/calendars/2026",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NSW",
+    "year": 2026,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2026-12-18",
+    "end_date": "2027-01-27",
+    "data_source": "NSW Department of Education",
+    "source_url": "https://www.education.nsw.gov.au/schooling/calendars/2026",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NSW",
+    "year": 2027,
+    "term_or_break_label": "Term 1 Holidays",
+    "start_date": "2027-04-12",
+    "end_date": "2027-04-23",
+    "data_source": "NSW Department of Education",
+    "source_url": "https://www.education.nsw.gov.au/schooling/calendars/future-and-past-nsw-term-and-vacation-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NSW",
+    "year": 2027,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2027-07-05",
+    "end_date": "2027-07-16",
+    "data_source": "NSW Department of Education",
+    "source_url": "https://www.education.nsw.gov.au/schooling/calendars/future-and-past-nsw-term-and-vacation-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NSW",
+    "year": 2027,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2027-09-27",
+    "end_date": "2027-10-08",
+    "data_source": "NSW Department of Education",
+    "source_url": "https://www.education.nsw.gov.au/schooling/calendars/future-and-past-nsw-term-and-vacation-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NSW",
+    "year": 2027,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2027-12-21",
+    "end_date": "2028-01-28",
+    "data_source": "NSW Department of Education",
+    "source_url": "https://www.education.nsw.gov.au/schooling/calendars/future-and-past-nsw-term-and-vacation-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "VIC",
+    "year": 2026,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2026-06-27",
+    "end_date": "2026-07-12",
+    "data_source": "Victorian Government",
+    "source_url": "https://www.vic.gov.au/school-term-dates-and-holidays-victoria",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "VIC",
+    "year": 2026,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2026-09-19",
+    "end_date": "2026-10-04",
+    "data_source": "Victorian Government",
+    "source_url": "https://www.vic.gov.au/school-term-dates-and-holidays-victoria",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "VIC",
+    "year": 2026,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2026-12-19",
+    "end_date": "2027-01-27",
+    "data_source": "Victorian Government",
+    "source_url": "https://www.vic.gov.au/school-term-dates-and-holidays-victoria",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "VIC",
+    "year": 2027,
+    "term_or_break_label": "Term 1 Holidays",
+    "start_date": "2027-03-26",
+    "end_date": "2027-04-11",
+    "data_source": "Victorian Government",
+    "source_url": "https://www.vic.gov.au/school-term-dates-and-holidays-victoria",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "VIC",
+    "year": 2027,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2027-06-26",
+    "end_date": "2027-07-11",
+    "data_source": "Victorian Government",
+    "source_url": "https://www.vic.gov.au/school-term-dates-and-holidays-victoria",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "VIC",
+    "year": 2027,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2027-09-18",
+    "end_date": "2027-10-03",
+    "data_source": "Victorian Government",
+    "source_url": "https://www.vic.gov.au/school-term-dates-and-holidays-victoria",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "VIC",
+    "year": 2027,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2027-12-18",
+    "end_date": "2028-01-30",
+    "data_source": "Victorian Government",
+    "source_url": "https://www.vic.gov.au/school-term-dates-and-holidays-victoria",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "QLD",
+    "year": 2026,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2026-06-27",
+    "end_date": "2026-07-12",
+    "data_source": "Queensland Department of Education",
+    "source_url": "https://education.qld.gov.au/about-us/calendar/term-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "QLD",
+    "year": 2026,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2026-09-19",
+    "end_date": "2026-10-05",
+    "data_source": "Queensland Department of Education",
+    "source_url": "https://education.qld.gov.au/about-us/calendar/term-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "QLD",
+    "year": 2026,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2026-12-12",
+    "end_date": "2027-01-26",
+    "data_source": "Queensland Department of Education",
+    "source_url": "https://education.qld.gov.au/about-us/calendar/term-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "QLD",
+    "year": 2027,
+    "term_or_break_label": "Term 1 Holidays",
+    "start_date": "2027-03-26",
+    "end_date": "2027-04-11",
+    "data_source": "Queensland Department of Education",
+    "source_url": "https://education.qld.gov.au/about-us/calendar/future-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "QLD",
+    "year": 2027,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2027-06-26",
+    "end_date": "2027-07-11",
+    "data_source": "Queensland Department of Education",
+    "source_url": "https://education.qld.gov.au/about-us/calendar/future-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "QLD",
+    "year": 2027,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2027-09-18",
+    "end_date": "2027-10-04",
+    "data_source": "Queensland Department of Education",
+    "source_url": "https://education.qld.gov.au/about-us/calendar/future-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "QLD",
+    "year": 2027,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2027-12-11",
+    "end_date": "2028-01-23",
+    "data_source": "Queensland Department of Education",
+    "source_url": "https://education.qld.gov.au/about-us/calendar/future-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "SA",
+    "year": 2026,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2026-07-04",
+    "end_date": "2026-07-19",
+    "data_source": "Department for Education, South Australia",
+    "source_url": "https://www.education.sa.gov.au/parents-and-families/term-dates-south-australian-state-schools",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "SA",
+    "year": 2026,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2026-09-26",
+    "end_date": "2026-10-11",
+    "data_source": "Department for Education, South Australia",
+    "source_url": "https://www.education.sa.gov.au/parents-and-families/term-dates-south-australian-state-schools",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "SA",
+    "year": 2026,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2026-12-12",
+    "end_date": "2027-01-27",
+    "data_source": "Department for Education, South Australia",
+    "source_url": "https://www.education.sa.gov.au/parents-and-families/term-dates-south-australian-state-schools",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "SA",
+    "year": 2027,
+    "term_or_break_label": "Term 1 Holidays",
+    "start_date": "2027-04-10",
+    "end_date": "2027-04-25",
+    "data_source": "Department for Education, South Australia",
+    "source_url": "https://www.education.sa.gov.au/parents-and-families/term-dates-south-australian-state-schools",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "SA",
+    "year": 2027,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2027-07-03",
+    "end_date": "2027-07-18",
+    "data_source": "Department for Education, South Australia",
+    "source_url": "https://www.education.sa.gov.au/parents-and-families/term-dates-south-australian-state-schools",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "SA",
+    "year": 2027,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2027-09-25",
+    "end_date": "2027-10-10",
+    "data_source": "Department for Education, South Australia",
+    "source_url": "https://www.education.sa.gov.au/parents-and-families/term-dates-south-australian-state-schools",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "SA",
+    "year": 2027,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2027-12-11",
+    "end_date": "2028-01-26",
+    "data_source": "Department for Education, South Australia",
+    "source_url": "https://www.education.sa.gov.au/parents-and-families/term-dates-south-australian-state-schools",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "WA",
+    "year": 2026,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2026-07-04",
+    "end_date": "2026-07-19",
+    "data_source": "School Curriculum and Standards Authority / WA Department of Education",
+    "source_url": "https://www.education.wa.edu.au/future-term-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "WA",
+    "year": 2026,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2026-09-26",
+    "end_date": "2026-10-11",
+    "data_source": "School Curriculum and Standards Authority / WA Department of Education",
+    "source_url": "https://www.education.wa.edu.au/future-term-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "WA",
+    "year": 2026,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2026-12-18",
+    "end_date": "2027-01-31",
+    "data_source": "School Curriculum and Standards Authority / WA Department of Education",
+    "source_url": "https://www.education.wa.edu.au/future-term-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "WA",
+    "year": 2027,
+    "term_or_break_label": "Term 1 Holidays",
+    "start_date": "2027-04-10",
+    "end_date": "2027-04-25",
+    "data_source": "School Curriculum and Standards Authority / WA Department of Education",
+    "source_url": "https://www.education.wa.edu.au/future-term-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "WA",
+    "year": 2027,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2027-07-03",
+    "end_date": "2027-07-18",
+    "data_source": "School Curriculum and Standards Authority / WA Department of Education",
+    "source_url": "https://www.education.wa.edu.au/future-term-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "WA",
+    "year": 2027,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2027-09-25",
+    "end_date": "2027-10-10",
+    "data_source": "School Curriculum and Standards Authority / WA Department of Education",
+    "source_url": "https://www.education.wa.edu.au/future-term-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "WA",
+    "year": 2027,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2027-12-18",
+    "end_date": "2028-01-31",
+    "data_source": "School Curriculum and Standards Authority / WA Department of Education",
+    "source_url": "https://www.education.wa.edu.au/future-term-dates",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "TAS",
+    "year": 2026,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2026-07-11",
+    "end_date": "2026-07-26",
+    "data_source": "Department for Education, Children and Young People (Tasmania)",
+    "source_url": "https://www.decyp.tas.gov.au/learning/term-dates/",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "TAS",
+    "year": 2026,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2026-10-03",
+    "end_date": "2026-10-18",
+    "data_source": "Department for Education, Children and Young People (Tasmania)",
+    "source_url": "https://www.decyp.tas.gov.au/learning/term-dates/",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "TAS",
+    "year": 2026,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2026-12-19",
+    "end_date": "2027-02-03",
+    "data_source": "Department for Education, Children and Young People (Tasmania)",
+    "source_url": "https://www.decyp.tas.gov.au/learning/term-dates/",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "TAS",
+    "year": 2027,
+    "term_or_break_label": "Term 1 Holidays",
+    "start_date": "2027-04-10",
+    "end_date": "2027-04-25",
+    "data_source": "Department for Education, Children and Young People (Tasmania)",
+    "source_url": "https://www.decyp.tas.gov.au/learning/term-dates/",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "TAS",
+    "year": 2027,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2027-07-03",
+    "end_date": "2027-07-18",
+    "data_source": "Department for Education, Children and Young People (Tasmania)",
+    "source_url": "https://www.decyp.tas.gov.au/learning/term-dates/",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "TAS",
+    "year": 2027,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2027-09-25",
+    "end_date": "2027-10-10",
+    "data_source": "Department for Education, Children and Young People (Tasmania)",
+    "source_url": "https://www.decyp.tas.gov.au/learning/term-dates/",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NT",
+    "year": 2026,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2026-06-20",
+    "end_date": "2026-07-13",
+    "data_source": "Northern Territory Government",
+    "source_url": "https://nt.gov.au/learning/primary-and-secondary-students/school-term-dates-in-nt",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NT",
+    "year": 2026,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2026-09-19",
+    "end_date": "2026-10-05",
+    "data_source": "Northern Territory Government",
+    "source_url": "https://nt.gov.au/learning/primary-and-secondary-students/school-term-dates-in-nt",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NT",
+    "year": 2026,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2026-12-11",
+    "end_date": "2027-01-26",
+    "data_source": "Northern Territory Government",
+    "source_url": "https://nt.gov.au/learning/primary-and-secondary-students/school-term-dates-in-nt",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NT",
+    "year": 2027,
+    "term_or_break_label": "Term 1 Holidays",
+    "start_date": "2027-04-03",
+    "end_date": "2027-04-12",
+    "data_source": "Northern Territory Government",
+    "source_url": "https://nt.gov.au/learning/primary-and-secondary-students/school-term-dates-in-nt",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NT",
+    "year": 2027,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2027-06-19",
+    "end_date": "2027-07-12",
+    "data_source": "Northern Territory Government",
+    "source_url": "https://nt.gov.au/learning/primary-and-secondary-students/school-term-dates-in-nt",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NT",
+    "year": 2027,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2027-09-18",
+    "end_date": "2027-10-04",
+    "data_source": "Northern Territory Government",
+    "source_url": "https://nt.gov.au/learning/primary-and-secondary-students/school-term-dates-in-nt",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "NT",
+    "year": 2027,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2027-12-10",
+    "end_date": "2028-01-24",
+    "data_source": "Northern Territory Government",
+    "source_url": "https://nt.gov.au/learning/primary-and-secondary-students/school-term-dates-in-nt",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "ACT",
+    "year": 2026,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2026-07-04",
+    "end_date": "2026-07-20",
+    "data_source": "ACT Government",
+    "source_url": "https://www.act.gov.au/living-in-the-act/public-holidays-school-terms-and-daylight-saving",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "ACT",
+    "year": 2026,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2026-09-26",
+    "end_date": "2026-10-12",
+    "data_source": "ACT Government",
+    "source_url": "https://www.act.gov.au/living-in-the-act/public-holidays-school-terms-and-daylight-saving",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "ACT",
+    "year": 2026,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2026-12-19",
+    "end_date": "2027-02-01",
+    "data_source": "ACT Government",
+    "source_url": "https://www.act.gov.au/living-in-the-act/public-holidays-school-terms-and-daylight-saving",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "ACT",
+    "year": 2027,
+    "term_or_break_label": "Term 1 Holidays",
+    "start_date": "2027-04-10",
+    "end_date": "2027-04-27",
+    "data_source": "ACT Government",
+    "source_url": "https://www.act.gov.au/living-in-the-act/public-holidays-school-terms-and-daylight-saving",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "ACT",
+    "year": 2027,
+    "term_or_break_label": "Term 2 Holidays",
+    "start_date": "2027-07-03",
+    "end_date": "2027-07-19",
+    "data_source": "ACT Government",
+    "source_url": "https://www.act.gov.au/living-in-the-act/public-holidays-school-terms-and-daylight-saving",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "ACT",
+    "year": 2027,
+    "term_or_break_label": "Term 3 Holidays",
+    "start_date": "2027-09-25",
+    "end_date": "2027-10-11",
+    "data_source": "ACT Government",
+    "source_url": "https://www.act.gov.au/living-in-the-act/public-holidays-school-terms-and-daylight-saving",
+    "verified_at": "2026-04-27"
+  },
+  {
+    "state_code": "ACT",
+    "year": 2027,
+    "term_or_break_label": "Summer Break",
+    "start_date": "2027-12-18",
+    "end_date": "2028-02-01",
+    "data_source": "ACT Government",
+    "source_url": "https://www.act.gov.au/living-in-the-act/public-holidays-school-terms-and-daylight-saving",
+    "verified_at": "2026-04-27"
+  }
+]
