@@ -34,4 +34,4 @@
 ## Git
 
 - **Branch:** `feature/busy-index-enrichments`
-- **Commit:** `b11b67b`
+- **Commit:** `eda3c81` (branch tip; feature commit `b11b67b`)
