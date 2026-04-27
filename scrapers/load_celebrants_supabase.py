@@ -1,7 +1,7 @@
 """Upsert all celebrant rows to ``public.celebrants`` (``celebrant_id`` as key).
 
-Reads ``data/celebrants_merged.csv``; if ``data/celebrants_enriched_top300.csv`` exists,
-merges Google fields by ``celebrant_id`` into the same frame before load.
+Reads ``data/celebrants_master_v1.csv`` if present, else ``data/celebrants_merged.csv``.
+If ``data/celebrants_enriched_top300.csv`` exists, merges Google fields by ``celebrant_id``.
 
 Run migration ``003_celebrants.sql`` in Supabase before this script.
 
@@ -25,7 +25,9 @@ load_dotenv(_ROOT / ".env", override=True)
 load_dotenv(_ROOT / ".env.local", override=True)
 load_dotenv(_ROOT / "env.local", override=True)
 
-MERGED = _ROOT / "data" / "celebrants_merged.csv"
+_MASTER = _ROOT / "data" / "celebrants_master_v1.csv"
+_MERGED = _ROOT / "data" / "celebrants_merged.csv"
+MERGED = _MASTER if _MASTER.is_file() else _MERGED
 TOP300 = _ROOT / "data" / "celebrants_enriched_top300.csv"
 BATCH = 200
 
