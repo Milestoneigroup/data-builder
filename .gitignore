@@ -41,6 +41,12 @@ env.local
 data/*
 !data/.gitkeep
 !data/ew_celebrants.csv
+!data/seed_weather_test_cells.json
+!data/seed_school_holidays_AU.json
+!data/seed_public_holidays_AU.json
+!data/seed_major_events_AU.json
+!data/ref_tra_regions_asgs2021.json
+!data/seed_destination_to_tra_region.json
 
 # Log files (keep logs/ directory via .gitkeep)
 logs/*

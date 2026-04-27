@@ -1,0 +1,458 @@
+[
+  {
+    "tra_region_code": "1R010",
+    "tra_region_name": "South Coast",
+    "asgs_state_digit": "1",
+    "state_code": "NSW"
+  },
+  {
+    "tra_region_code": "1R040",
+    "tra_region_name": "Sydney",
+    "asgs_state_digit": "1",
+    "state_code": "NSW"
+  },
+  {
+    "tra_region_code": "1R050",
+    "tra_region_name": "Snowy Mountains",
+    "asgs_state_digit": "1",
+    "state_code": "NSW"
+  },
+  {
+    "tra_region_code": "1R060",
+    "tra_region_name": "Capital Country",
+    "asgs_state_digit": "1",
+    "state_code": "NSW"
+  },
+  {
+    "tra_region_code": "1R070",
+    "tra_region_name": "The Murray",
+    "asgs_state_digit": "1",
+    "state_code": "NSW"
+  },
+  {
+    "tra_region_code": "1R080",
+    "tra_region_name": "Riverina",
+    "asgs_state_digit": "1",
+    "state_code": "NSW"
+  },
+  {
+    "tra_region_code": "1R090",
+    "tra_region_name": "Central NSW",
+    "asgs_state_digit": "1",
+    "state_code": "NSW"
+  },
+  {
+    "tra_region_code": "1R100",
+    "tra_region_name": "Hunter",
+    "asgs_state_digit": "1",
+    "state_code": "NSW"
+  },
+  {
+    "tra_region_code": "1R140",
+    "tra_region_name": "New England North West",
+    "asgs_state_digit": "1",
+    "state_code": "NSW"
+  },
+  {
+    "tra_region_code": "1R150",
+    "tra_region_name": "Outback NSW",
+    "asgs_state_digit": "1",
+    "state_code": "NSW"
+  },
+  {
+    "tra_region_code": "1R180",
+    "tra_region_name": "Central Coast",
+    "asgs_state_digit": "1",
+    "state_code": "NSW"
+  },
+  {
+    "tra_region_code": "1R190",
+    "tra_region_name": "Blue Mountains",
+    "asgs_state_digit": "1",
+    "state_code": "NSW"
+  },
+  {
+    "tra_region_code": "1R200",
+    "tra_region_name": "North Coast NSW",
+    "asgs_state_digit": "1",
+    "state_code": "NSW"
+  },
+  {
+    "tra_region_code": "2R010",
+    "tra_region_name": "Melbourne",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R020",
+    "tra_region_name": "Wimmera",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R030",
+    "tra_region_name": "Mallee",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R040",
+    "tra_region_name": "Great Ocean Road",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R050",
+    "tra_region_name": "Western Grampians",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R060",
+    "tra_region_name": "Bendigo Loddon",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R070",
+    "tra_region_name": "Peninsula",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R080",
+    "tra_region_name": "Central Murray",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R090",
+    "tra_region_name": "Goulburn",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R100",
+    "tra_region_name": "High Country",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R110",
+    "tra_region_name": "Lakes",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R120",
+    "tra_region_name": "Gippsland",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R140",
+    "tra_region_name": "Geelong and the Bellarine",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R150",
+    "tra_region_name": "Macedon",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R160",
+    "tra_region_name": "Spa Country",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R170",
+    "tra_region_name": "Ballarat",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R180",
+    "tra_region_name": "Central Highlands",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R200",
+    "tra_region_name": "Murray East",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R210",
+    "tra_region_name": "Phillip Island",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "2R220",
+    "tra_region_name": "Yarra Valley and the Dandenong Ranges",
+    "asgs_state_digit": "2",
+    "state_code": "VIC"
+  },
+  {
+    "tra_region_code": "3R010",
+    "tra_region_name": "Gold Coast",
+    "asgs_state_digit": "3",
+    "state_code": "QLD"
+  },
+  {
+    "tra_region_code": "3R020",
+    "tra_region_name": "Brisbane",
+    "asgs_state_digit": "3",
+    "state_code": "QLD"
+  },
+  {
+    "tra_region_code": "3R030",
+    "tra_region_name": "Sunshine Coast",
+    "asgs_state_digit": "3",
+    "state_code": "QLD"
+  },
+  {
+    "tra_region_code": "3R040",
+    "tra_region_name": "Fraser Coast",
+    "asgs_state_digit": "3",
+    "state_code": "QLD"
+  },
+  {
+    "tra_region_code": "3R060",
+    "tra_region_name": "Southern Queensland Country",
+    "asgs_state_digit": "3",
+    "state_code": "QLD"
+  },
+  {
+    "tra_region_code": "3R070",
+    "tra_region_name": "Bundaberg",
+    "asgs_state_digit": "3",
+    "state_code": "QLD"
+  },
+  {
+    "tra_region_code": "3R090",
+    "tra_region_name": "Mackay",
+    "asgs_state_digit": "3",
+    "state_code": "QLD"
+  },
+  {
+    "tra_region_code": "3R100",
+    "tra_region_name": "Whitsundays",
+    "asgs_state_digit": "3",
+    "state_code": "QLD"
+  },
+  {
+    "tra_region_code": "3R110",
+    "tra_region_name": "Townsville",
+    "asgs_state_digit": "3",
+    "state_code": "QLD"
+  },
+  {
+    "tra_region_code": "3R120",
+    "tra_region_name": "Tropical North Queensland",
+    "asgs_state_digit": "3",
+    "state_code": "QLD"
+  },
+  {
+    "tra_region_code": "3R140",
+    "tra_region_name": "Outback Queensland",
+    "asgs_state_digit": "3",
+    "state_code": "QLD"
+  },
+  {
+    "tra_region_code": "3R170",
+    "tra_region_name": "Capricorn",
+    "asgs_state_digit": "3",
+    "state_code": "QLD"
+  },
+  {
+    "tra_region_code": "3R180",
+    "tra_region_name": "Gladstone",
+    "asgs_state_digit": "3",
+    "state_code": "QLD"
+  },
+  {
+    "tra_region_code": "4R010",
+    "tra_region_name": "Limestone Coast",
+    "asgs_state_digit": "4",
+    "state_code": "SA"
+  },
+  {
+    "tra_region_code": "4R020",
+    "tra_region_name": "Murray River, Lakes and Coorong",
+    "asgs_state_digit": "4",
+    "state_code": "SA"
+  },
+  {
+    "tra_region_code": "4R030",
+    "tra_region_name": "Fleurieu Peninsula",
+    "asgs_state_digit": "4",
+    "state_code": "SA"
+  },
+  {
+    "tra_region_code": "4R040",
+    "tra_region_name": "Adelaide",
+    "asgs_state_digit": "4",
+    "state_code": "SA"
+  },
+  {
+    "tra_region_code": "4R050",
+    "tra_region_name": "Barossa",
+    "asgs_state_digit": "4",
+    "state_code": "SA"
+  },
+  {
+    "tra_region_code": "4R060",
+    "tra_region_name": "Riverland",
+    "asgs_state_digit": "4",
+    "state_code": "SA"
+  },
+  {
+    "tra_region_code": "4R070",
+    "tra_region_name": "Flinders Ranges and Outback",
+    "asgs_state_digit": "4",
+    "state_code": "SA"
+  },
+  {
+    "tra_region_code": "4R080",
+    "tra_region_name": "Clare Valley",
+    "asgs_state_digit": "4",
+    "state_code": "SA"
+  },
+  {
+    "tra_region_code": "4R110",
+    "tra_region_name": "Eyre Peninsula",
+    "asgs_state_digit": "4",
+    "state_code": "SA"
+  },
+  {
+    "tra_region_code": "4R120",
+    "tra_region_name": "Yorke Peninsula",
+    "asgs_state_digit": "4",
+    "state_code": "SA"
+  },
+  {
+    "tra_region_code": "4R130",
+    "tra_region_name": "Kangaroo Island",
+    "asgs_state_digit": "4",
+    "state_code": "SA"
+  },
+  {
+    "tra_region_code": "4R140",
+    "tra_region_name": "Adelaide Hills",
+    "asgs_state_digit": "4",
+    "state_code": "SA"
+  },
+  {
+    "tra_region_code": "5R120",
+    "tra_region_name": "Destination Perth",
+    "asgs_state_digit": "5",
+    "state_code": "WA"
+  },
+  {
+    "tra_region_code": "5R130",
+    "tra_region_name": "Australia's Golden Outback",
+    "asgs_state_digit": "5",
+    "state_code": "WA"
+  },
+  {
+    "tra_region_code": "5R140",
+    "tra_region_name": "Australia's South West",
+    "asgs_state_digit": "5",
+    "state_code": "WA"
+  },
+  {
+    "tra_region_code": "5R160",
+    "tra_region_name": "Australia's North West",
+    "asgs_state_digit": "5",
+    "state_code": "WA"
+  },
+  {
+    "tra_region_code": "5R170",
+    "tra_region_name": "Australia's Coral Coast",
+    "asgs_state_digit": "5",
+    "state_code": "WA"
+  },
+  {
+    "tra_region_code": "6R030",
+    "tra_region_name": "East Coast",
+    "asgs_state_digit": "6",
+    "state_code": "TAS"
+  },
+  {
+    "tra_region_code": "6R060",
+    "tra_region_name": "North West",
+    "asgs_state_digit": "6",
+    "state_code": "TAS"
+  },
+  {
+    "tra_region_code": "6R080",
+    "tra_region_name": "West Coast",
+    "asgs_state_digit": "6",
+    "state_code": "TAS"
+  },
+  {
+    "tra_region_code": "6R100",
+    "tra_region_name": "Hobart and the South",
+    "asgs_state_digit": "6",
+    "state_code": "TAS"
+  },
+  {
+    "tra_region_code": "6R110",
+    "tra_region_name": "Launceston and the North",
+    "asgs_state_digit": "6",
+    "state_code": "TAS"
+  },
+  {
+    "tra_region_code": "7R010",
+    "tra_region_name": "Darwin",
+    "asgs_state_digit": "7",
+    "state_code": "NT"
+  },
+  {
+    "tra_region_code": "7R050",
+    "tra_region_name": "Barkly",
+    "asgs_state_digit": "7",
+    "state_code": "NT"
+  },
+  {
+    "tra_region_code": "7R070",
+    "tra_region_name": "Alice Springs",
+    "asgs_state_digit": "7",
+    "state_code": "NT"
+  },
+  {
+    "tra_region_code": "7R100",
+    "tra_region_name": "Litchfield Kakadu Arnhem",
+    "asgs_state_digit": "7",
+    "state_code": "NT"
+  },
+  {
+    "tra_region_code": "7R110",
+    "tra_region_name": "Katherine Daly",
+    "asgs_state_digit": "7",
+    "state_code": "NT"
+  },
+  {
+    "tra_region_code": "7R140",
+    "tra_region_name": "MacDonnell",
+    "asgs_state_digit": "7",
+    "state_code": "NT"
+  },
+  {
+    "tra_region_code": "7R150",
+    "tra_region_name": "Lasseter",
+    "asgs_state_digit": "7",
+    "state_code": "NT"
+  },
+  {
+    "tra_region_code": "8R990",
+    "tra_region_name": "Canberra",
+    "asgs_state_digit": "8",
+    "state_code": "ACT"
+  }
+]
