@@ -1,11 +1,13 @@
 """Australian wedding influencer / content source discovery via Claude web search.
 
-Loads existing homepage URLs from ``shared.ref_influencers`` (plus optional
-``data/influencer_existing_urls.txt``) for deduplication, runs 52 fixed queries through
-the Anthropic Messages API with the web_search tool, appends new rows to
-``data/influencer_discovered_new.csv``, and **upserts** new sources into
-``shared.ref_influencers`` (``discovery_source`` = ``auto_discovery_<date>``,
-``data_confidence`` = ``low``).
+Loads existing homepage URLs from ``shared.ref_influencers`` (``SELECT url``, plus
+optional ``data/influencer_existing_urls.txt``) for deduplication, runs 52 fixed queries
+through the Anthropic Messages API with the web_search tool, appends new rows to
+``data/influencer_discovered_new.csv``, and **upserts** each new source to
+``shared.ref_influencers`` immediately (same run: CSV + Supabase). Each insert uses
+``discovery_source`` = ``auto_discovery_<YYYY-MM-DD>``, ``data_confidence`` = ``low``,
+``is_active`` = true. After all queries, re-syncs ``data/influencer_existing_urls.txt``
+from Supabase.
 
 Examples
 --------
@@ -390,6 +392,7 @@ def run(
         fetch_url_to_source_id,
         influencer_rec_from_discovery_row,
         upsert_single_influencer,
+        write_influencer_urls_txt,
     )
 
     settings = get_settings()
@@ -544,10 +547,16 @@ def run(
     log.info(summary.strip())
     print(f"New sources added to Supabase: {supabase_inserts}", flush=True)
     log.info("New sources added to Supabase: %s", supabase_inserts)
+
+    # Post-run: authoritative URL list from Supabase (SELECT url → normalise → txt).
+    # New rows were upserted during the run with discovery_source=auto_discovery_<date>,
+    # data_confidence=low, is_active=True via influencer_rec_from_discovery_row.
     try:
-        EXISTING_URLS_PATH.write_text("\n".join(sorted(seen)) + ("\n" if seen else ""), encoding="utf-8")
+        n_sync = write_influencer_urls_txt(sb_client, EXISTING_URLS_PATH)
+        print(f"Post-run: synced {n_sync} URLs from shared.ref_influencers to {EXISTING_URLS_PATH}", flush=True)
+        log.info("Post-run Supabase URL sync: %s URLs -> %s", n_sync, EXISTING_URLS_PATH)
     except Exception as e:  # noqa: BLE001
-        log.warning("Could not refresh %s: %s", EXISTING_URLS_PATH, e)
+        log.warning("Post-run Supabase URL sync failed: %s", e)
 
 
 def main() -> None:

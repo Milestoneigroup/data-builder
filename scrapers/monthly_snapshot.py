@@ -646,21 +646,8 @@ if __name__ == "__main__":
             except Exception:  # noqa: BLE001
                 LOG.exception("afcc_profile_scraper quarterly job failed")
 
-        def _influencer_enrichment_job() -> None:
-            try:
-                from scrapers.influencer_enrichment import main as inf_main
-
-                inf_main()
-            except Exception:  # noqa: BLE001
-                LOG.exception("influencer_enrichment monthly job failed")
-
-        def _influencer_discovery_job() -> None:
-            try:
-                from scrapers.influencer_discovery import main as disc_main
-
-                disc_main()
-            except Exception:  # noqa: BLE001
-                LOG.exception("influencer_discovery monthly job failed")
+        from scrapers.influencer_discovery import main as inf_disc_main
+        from scrapers.influencer_enrichment import main as inf_enrich_main
 
         scheduler.add_job(
             _afcc_quarterly,
@@ -668,12 +655,12 @@ if __name__ == "__main__":
             id="quarterly_afcc_profile_scrape",
         )
         scheduler.add_job(
-            _influencer_enrichment_job,
+            inf_enrich_main,
             CronTrigger(day=5, hour=18, minute=0),
             id="monthly_influencer_enrichment",
         )
         scheduler.add_job(
-            _influencer_discovery_job,
+            inf_disc_main,
             CronTrigger(day=6, hour=18, minute=0),
             id="monthly_influencer_discovery",
         )
