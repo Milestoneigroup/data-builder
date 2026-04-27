@@ -82,6 +82,32 @@ WL_URLS = (
 WL_STATE = {"nsw": "NSW", "vic": "VIC", "qld": "QLD", "wa": "WA", "sa": "SA", "tas": "TAS"}
 MCA_BROWSE = "https://app.mycelebrantapp.com/browse"
 
+MCA_CSV_COLUMNS = (
+    "name",
+    "state",
+    "profile_url",
+    "review_count",
+    "state_location",
+    "speciality",
+    "price_range",
+    "mycelebrantapp_profile_url",
+)
+
+
+def _wedlockers_urls_for_states(states: list[str] | None) -> tuple[str, ...]:
+    """Subset of ``WL_URLS`` by lowercase state token (e.g. ``nsw``). ``None`` = all."""
+    if states is None:
+        return WL_URLS
+    want = {str(s).lower().strip() for s in states if str(s).strip()}
+    if not want:
+        return WL_URLS
+    picked: list[str] = []
+    for u in WL_URLS:
+        m = re.search(r"/planning/([a-z]+)-marriage", u, re.I)
+        if m and m.group(1).lower() in want:
+            picked.append(u)
+    return tuple(picked)
+
 TWS_REGION_TO_STATE = {
     "new-south-wales": "NSW",
     "queensland": "QLD",
@@ -305,10 +331,15 @@ def scrape_tws(client: httpx.Client, delay_s: float = 3.0) -> list[dict[str, Any
     return rows
 
 
-def scrape_wedlockers(client: httpx.Client, delay_s: float = 3.0) -> list[dict[str, Any]]:
+def scrape_wedlockers(
+    client: httpx.Client,
+    delay_s: float = 3.0,
+    *,
+    states: list[str] | None = None,
+) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     seen: set[str] = set()
-    for page_url in WL_URLS:
+    for page_url in _wedlockers_urls_for_states(states):
         mkey = re.search(r"/planning/([a-z]+)-marriage", page_url, re.I)
         key = (mkey.group(1).lower() if mkey else "nsw")
         state = WL_STATE.get(key, key.upper()[:3])
@@ -670,6 +701,8 @@ def run_step1(
     *,
     skip_ew: bool = False,
     skip_afcc: bool = False,
+    skip_mycelebrantapp: bool = False,
+    wedlockers_states: list[str] | None = None,
     request_delay_s: float = 3.0,
     directory_browser_headers: bool = True,
 ) -> None:
@@ -701,10 +734,16 @@ def run_step1(
 
         pd.DataFrame(scrape_tws(client, delay_s=request_delay_s)).to_csv(tws_path, index=False)
         logging.info("Wrote TWS -> %s", tws_path)
-        pd.DataFrame(scrape_wedlockers(client, delay_s=request_delay_s)).to_csv(wl_path, index=False)
+        pd.DataFrame(
+            scrape_wedlockers(client, delay_s=request_delay_s, states=wedlockers_states)
+        ).to_csv(wl_path, index=False)
         logging.info("Wrote Wedlockers -> %s", wl_path)
-        pd.DataFrame(scrape_mycelebrantapp(delay_s=request_delay_s)).to_csv(mca_path, index=False)
-        logging.info("Wrote MyCelebrantApp -> %s", mca_path)
+        if not skip_mycelebrantapp:
+            pd.DataFrame(scrape_mycelebrantapp(delay_s=request_delay_s)).to_csv(mca_path, index=False)
+            logging.info("Wrote MyCelebrantApp -> %s", mca_path)
+        else:
+            logging.info("skip_mycelebrantapp=True: empty %s (no Playwright/Chromium)", mca_path)
+            pd.DataFrame(columns=list(MCA_CSV_COLUMNS)).to_csv(mca_path, index=False)
 
 
 def run_step2(
@@ -822,19 +861,7 @@ def main() -> int:
                     ],
                 ),
                 (wl_path, ["name", "state", "profile_url", "review_count", "wedlockers_profile_url"]),
-                (
-                    mca_path,
-                    [
-                        "name",
-                        "state",
-                        "profile_url",
-                        "review_count",
-                        "state_location",
-                        "speciality",
-                        "price_range",
-                        "mycelebrantapp_profile_url",
-                    ],
-                ),
+                (mca_path, list(MCA_CSV_COLUMNS)),
             ):
                 pd.DataFrame(columns=empty).to_csv(p, index=False)
         else:
