@@ -87,9 +87,7 @@ git commit -m "feat(weather): expand SILO backfill to ~100 cells"
 git push origin feature/silo-weather-backfill
 ```
 
-Replace the line below with the real hash after commit:
-
-- **Commit (this session, pre-push):** _pending — commit after validation_
+- **Commit:** `dc564ec` (pushed to `origin/feature/silo-weather-backfill`).
 
 ## 5. SILO 100-CELL EXPANSION SUMMARY (fill post-run)
 
