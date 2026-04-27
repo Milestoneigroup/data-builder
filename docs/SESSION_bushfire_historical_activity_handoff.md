@@ -75,8 +75,8 @@ SELECT absolute_risk_label, COUNT(*) FROM shared.ref_destination_fire_activity_m
 
 **Pending** — after `git push -u origin feature/bushfire-historical-activity`, record:
 
-- Commit hash: `________________`
-- Push: confirmed / not run
+- Commit hash: `20e3191`
+- Push: confirmed (`git push -u origin feature/bushfire-historical-activity`)
 
 ## 9. Next move
 
