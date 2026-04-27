@@ -141,7 +141,7 @@ month_of_year	avg_rainfall_mm	rain_days_avg
 
 ## 6. Git state
 
-- **Commit hash:** `0ba6e77af7936377b5c0eb3cd96ed66c585e3efe`
+- **Commit hash:** `f6bc6abeac48410f36b3c3b9f245c64727b8e1f2`
 - **Branch:** `feature/silo-weather-backfill`
 - **Push:** completed to `origin/feature/silo-weather-backfill` with this handoff + migration 013.
 
