@@ -34,4 +34,4 @@
 ## Git
 
 - **Branch:** `feature/busy-index-enrichments`
-- **Commit:** *(fill after `git commit`)*
+- **Commit:** `b11b67b`
