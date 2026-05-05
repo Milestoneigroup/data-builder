@@ -121,7 +121,7 @@ Checksum-valid only; **Session 2 must confirm legal entity == venue** (especiall
 
 Recorded after push:
 
-`git rev-parse HEAD` on branch `feature/abn-website-scraper` → **(fill when pushed)**
+`git rev-parse HEAD` on branch `feature/abn-website-scraper` → **`5607301edeff3c4da502d1a5a6e33973d2778221`**
 
 ---
 
