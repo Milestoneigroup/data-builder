@@ -4,9 +4,9 @@ Run: ``python -m scrapers.firms_hotspot_download``
 
 Requires ``NASA_FIRMS_MAP_KEY`` (see https://firms.modaps.eosdis.nasa.gov/api/map_key/).
 
-API reference (verified 2026-04-27): https://firms.modaps.eosdis.nasa.gov/api/area/
+API reference (verified 2026-05-06): https://firms.modaps.eosdis.nasa.gov/api/area/
 - Path: ``/api/area/csv/{MAP_KEY}/{SOURCE}/{west,south,east,north}/{DAY_RANGE}/{DATE}``
-- ``DAY_RANGE`` is 1..5 days per request (not 10).
+- ``DAY_RANGE`` is 1..5 days per request.
 - ``DATE`` optional: when set, returns [DATE .. DATE+DAY_RANGE-1].
 - Archive source: ``VIIRS_SNPP_SP`` (Standard Processing).
 
@@ -20,26 +20,27 @@ import logging
 import os
 import sys
 import time
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterator
 
 import httpx
 from dotenv import load_dotenv
 
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("firms_download")
 
 _ROOT = Path(__file__).resolve().parents[1]
 _FIRMS_BASE = "https://firms.modaps.eosdis.nasa.gov/api/area/csv"
 _SOURCE = "VIIRS_SNPP_SP"
-# west,south,east,north per FIRMS Area API (not north/south/east/west keywords).
 _AU_BBOX = "112,-44,154,-10"
 _MAX_DAY_RANGE = 5
 _START_DATE = date(2012, 1, 20)
 _REQUEST_PAUSE_S = 2.0
-_MAX_ATTEMPTS = 5
-_BACKOFF_S = (2, 4, 8, 16, 32)
+_MAX_ATTEMPTS = 3
+_BACKOFF_S = (2, 4, 8)
 _TIMEOUT_S = 120.0
 _MAX_FAILURE_RATE = 0.05
 
@@ -51,7 +52,7 @@ def _load_env() -> None:
 
 
 def _yesterday_utc() -> date:
-    return (datetime.utcnow() - timedelta(days=1)).date()
+    return (datetime.now(timezone.utc) - timedelta(days=1)).date()
 
 
 def _chunk_ranges(
@@ -107,9 +108,11 @@ def main() -> int:
         log.error("End date before start.")
         return 1
 
+    t_run0 = time.perf_counter()
     chunks = list(_chunk_ranges(start, end, _MAX_DAY_RANGE))
     total_chunks = len(chunks)
     failed = 0
+    downloaded = 0
     total_rows = 0
     skipped = 0
 
@@ -140,6 +143,7 @@ def main() -> int:
                 time.sleep(_REQUEST_PAUSE_S)
                 continue
             path.write_text(body, encoding="utf-8")
+            downloaded += 1
             lines = [ln for ln in body.splitlines() if ln.strip()]
             if not lines:
                 log.warning("empty response %s..%s", d0, d1)
@@ -156,13 +160,16 @@ def main() -> int:
             time.sleep(_REQUEST_PAUSE_S)
 
     failure_rate = failed / total_chunks if total_chunks else 0.0
+    elapsed_s = time.perf_counter() - t_run0
     log.info(
-        "summary: chunks=%s failed=%s skipped_existing=%s failure_rate=%.4f total_rows=%s",
+        "summary: chunks=%s completed_downloads=%s failed=%s skipped_existing=%s failure_rate=%.4f total_rows=%s runtime_s=%.1f",
         total_chunks,
+        downloaded,
         failed,
         skipped,
         failure_rate,
         total_rows,
+        elapsed_s,
     )
     if failure_rate > _MAX_FAILURE_RATE:
         log.error(
@@ -184,26 +191,13 @@ def main() -> int:
         )
         return 4
 
-    # Concatenate all chunk CSVs in chronological order (one header).
-    archive_root = _ROOT / "data" / "firms_archive"
     combined = _ROOT / "data" / "firms_archive" / "AU_VIIRS_2012_to_present.csv"
     combined.parent.mkdir(parents=True, exist_ok=True)
-    all_files: list[Path] = []
-    for year_dir in sorted(archive_root.glob("*")):
-        if not year_dir.is_dir() or not year_dir.name.isdigit():
-            continue
-        all_files.extend(sorted(year_dir.glob("*.csv")))
-    # Exclude the combined artifact if re-run
-    all_files = [p for p in all_files if p.name != "AU_VIIRS_2012_to_present.csv"]
-    all_files.sort(key=lambda p: p.name)
-
-    if not all_files:
-        log.error("No per-chunk CSV files found under data/firms_archive/")
-        return 3
+    ordered_paths = [_chunk_path(d0.year, d0, d1) for d0, d1 in chunks]
 
     first = True
     with combined.open("w", encoding="utf-8", newline="") as out:
-        for fp in all_files:
+        for fp in ordered_paths:
             text = fp.read_text(encoding="utf-8", errors="replace")
             lines = text.splitlines()
             if not lines:
@@ -214,7 +208,6 @@ def main() -> int:
                     out.write("\n")
                 first = False
             else:
-                # drop header row on subsequent files
                 rest = lines[1:] if len(lines) > 1 else []
                 if rest:
                     out.write("\n".join(rest))

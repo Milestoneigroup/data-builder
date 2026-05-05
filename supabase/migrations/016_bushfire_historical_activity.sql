@@ -1,5 +1,5 @@
--- Bushfire historical activity: NASA FIRMS VIIRS S-NPP (SP) aggregated per destination × month-of-year.
--- Migration 013 (bushfire feature branch).
+-- Bushfire historical activity: NASA FIRMS VIIRS S-NPP (SP) per destination × month-of-year.
+-- Migration 016.
 
 CREATE OR REPLACE FUNCTION shared.set_updated_at()
 RETURNS trigger
@@ -27,11 +27,11 @@ CREATE TABLE shared.ref_destination_fire_activity_monthly (
   data_source text NOT NULL DEFAULT 'NASA FIRMS VIIRS_SNPP',
   data_period_start date NOT NULL,
   data_period_end date NOT NULL,
-  last_refreshed_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
+  last_refreshed_at timestamptz DEFAULT timezone('utc', now()),
   created_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
   updated_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
   CONSTRAINT ref_destination_fire_activity_monthly_month_chk
-    CHECK (month_of_year >= 1 AND month_of_year <= 12),
+    CHECK (month_of_year BETWEEN 1 AND 12),
   CONSTRAINT ref_destination_fire_activity_monthly_relative_chk
     CHECK (
       relative_risk_label IS NULL
@@ -78,19 +78,20 @@ COMMENT ON COLUMN shared.ref_destinations.fire_activity_data_period_end IS
 
 ALTER TABLE shared.ref_destination_fire_activity_monthly ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS fire_activity_read ON shared.ref_destination_fire_activity_monthly;
+DROP POLICY IF EXISTS fire_activity_write ON shared.ref_destination_fire_activity_monthly;
 DROP POLICY IF EXISTS "fire_activity_read" ON shared.ref_destination_fire_activity_monthly;
 DROP POLICY IF EXISTS "fire_activity_write" ON shared.ref_destination_fire_activity_monthly;
 
-CREATE POLICY "fire_activity_read" ON shared.ref_destination_fire_activity_monthly
+CREATE POLICY fire_activity_read ON shared.ref_destination_fire_activity_monthly
   FOR SELECT TO anon, authenticated USING (true);
-CREATE POLICY "fire_activity_write" ON shared.ref_destination_fire_activity_monthly
+CREATE POLICY fire_activity_write ON shared.ref_destination_fire_activity_monthly
   FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-GRANT SELECT ON shared.ref_destination_fire_activity_monthly TO anon;
-GRANT SELECT ON shared.ref_destination_fire_activity_monthly TO authenticated;
+GRANT SELECT ON shared.ref_destination_fire_activity_monthly TO anon, authenticated;
 GRANT ALL ON shared.ref_destination_fire_activity_monthly TO service_role;
 
-GRANT USAGE, SELECT ON SEQUENCE shared.ref_destination_fire_activity_monthly_fire_activity_id_seq TO service_role;
+GRANT SELECT, USAGE ON SEQUENCE shared.ref_destination_fire_activity_monthly_fire_activity_id_seq TO service_role;
 
 CREATE OR REPLACE VIEW shared.v_destination_fire_risk_by_month AS
 SELECT
@@ -117,6 +118,4 @@ LEFT JOIN shared.ref_destination_fire_activity_monthly f ON f.destination_id = d
 WHERE d.is_active = true
 ORDER BY d.destination_id, f.month_of_year;
 
-GRANT SELECT ON shared.v_destination_fire_risk_by_month TO anon;
-GRANT SELECT ON shared.v_destination_fire_risk_by_month TO authenticated;
-GRANT SELECT ON shared.v_destination_fire_risk_by_month TO service_role;
+GRANT SELECT ON shared.v_destination_fire_risk_by_month TO anon, authenticated, service_role;

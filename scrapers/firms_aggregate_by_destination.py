@@ -14,7 +14,7 @@ import logging
 import sys
 from collections import defaultdict
 from collections.abc import Iterator
-from datetime import date, datetime, timezone
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -102,7 +102,6 @@ def _norm_date_col(df: pd.DataFrame) -> pd.Series:
 
 
 def _cdist_m(h_xy: np.ndarray, d_xy: np.ndarray) -> np.ndarray:
-    """Euclidean distance in metres (projected CRS), shapes (nh,2) and (nd,2)."""
     diff = h_xy[:, None, :] - d_xy[None, :, :]
     return np.sqrt((diff * diff).sum(axis=2))
 
@@ -112,7 +111,6 @@ def _year_range(dmin: date, dmax: date) -> list[int]:
 
 
 def _relative_labels(avg_by_month: dict[int, float]) -> dict[int, str]:
-    """Rank 12 months by avg 25km; assign peak/high/medium/low/lowest (2+2+4+2+2)."""
     months_sorted = sorted(avg_by_month.keys(), key=lambda m: (-avg_by_month[m], m))
     label_by_month: dict[int, str] = {}
     buckets = (
@@ -129,11 +127,12 @@ def _relative_labels(avg_by_month: dict[int, float]) -> dict[int, str]:
                 break
             label_by_month[months_sorted[idx]] = label
             idx += 1
+    for m in range(1, 13):
+        label_by_month.setdefault(m, "medium")
     return label_by_month
 
 
 def _absolute_labels_from_ranks(values: list[float]) -> list[str]:
-    """Map each value to AU-wide bucket using mid-rank percentile (handles ties)."""
     if not values:
         return []
     arr = np.array(values, dtype=np.float64)
@@ -226,7 +225,6 @@ def main() -> int:
             log.error("%s", e)
             return 2
         mask = lat_s.notna() & lon_s.notna() & dt.notna()
-        chunk = chunk.loc[mask].copy()
         lat_s = lat_s.loc[mask].to_numpy(dtype=np.float64)
         lon_s = lon_s.loc[mask].to_numpy(dtype=np.float64)
         dt = dt.loc[mask]
@@ -290,7 +288,6 @@ def main() -> int:
         len(dest_ids),
     )
 
-    # Per destination × month: yearly counts for 10/25/50 km
     rows_out: list[dict[str, Any]] = []
     all_avgs_25: list[float] = []
 
@@ -341,12 +338,12 @@ def main() -> int:
     for r in rows_out:
         by_dest[str(r["destination_id"])].append(r)
 
-    for did, rlist in by_dest.items():
+    for _, rlist in by_dest.items():
         avg_by_month = {int(r["month_of_year"]): float(r["avg_hotspots_per_year_25km"]) for r in rlist}
         rel = _relative_labels(avg_by_month)
         for r in rlist:
             m = int(r["month_of_year"])
-            r["relative_risk_label"] = rel.get(m)
+            r["relative_risk_label"] = rel[m]
 
     batch: list[dict[str, Any]] = []
     for r in rows_out:
@@ -367,34 +364,15 @@ def main() -> int:
             .execute()
         )
 
-    # Denormalise ref_destinations
     for did, rlist in by_dest.items():
-        rel_order = sorted(
-            rlist,
-            key=lambda x: (
-                -{"peak": 5, "high": 4, "medium": 3, "low": 2, "lowest": 1}.get(
-                    str(x.get("relative_risk_label")), 0
-                ),
-                -float(x["avg_hotspots_per_year_25km"]),
-                int(x["month_of_year"]),
-            ),
-        )
-        peak_ms = [
-            _MONTH_ABB[int(x["month_of_year"]) - 1]
-            for x in rel_order
-            if x.get("relative_risk_label") == "peak"
-        ][:2]
-        low_ms = [
-            _MONTH_ABB[int(x["month_of_year"]) - 1]
-            for x in sorted(
-                rlist,
-                key=lambda x: (
-                    float(x["avg_hotspots_per_year_25km"]),
-                    int(x["month_of_year"]),
-                ),
-            )
-            if x.get("relative_risk_label") == "lowest"
-        ][:2]
+        peak_ms_num = sorted(
+            int(x["month_of_year"]) for x in rlist if x.get("relative_risk_label") == "peak"
+        )[:2]
+        peak_ms = [_MONTH_ABB[m - 1] for m in peak_ms_num]
+        low_ms_num = sorted(
+            int(x["month_of_year"]) for x in rlist if x.get("relative_risk_label") == "lowest"
+        )[:2]
+        low_ms = [_MONTH_ABB[m - 1] for m in low_ms_num]
         peak_s = ", ".join(peak_ms) if peak_ms else ""
         low_s = ", ".join(low_ms) if low_ms else ""
         (
