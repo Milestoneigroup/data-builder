@@ -1,0 +1,26 @@
+{
+  "group_name": "Merivale",
+  "group_slug": "merivale",
+  "group_website": "https://merivale.com",
+  "group_weddings_url": "https://merivale.com/partiesandevents/weddings-engagements/",
+  "group_hq_state": "NSW",
+  "group_hq_suburb": "Sydney",
+  "group_notes": "Founded 1958, run by Justin Hemmes since 2007. Sydney's largest premium hospitality group.",
+  "venues": [
+    { "name": "Establishment Ballroom",        "suburb": "Sydney",         "state": "NSW", "address_hint": "252 George St, Sydney NSW 2000", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/establishment-ballroom-weddings/" },
+    { "name": "Establishment Level 3",         "suburb": "Sydney",         "state": "NSW", "address_hint": "252 George St, Sydney NSW 2000", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/establishment-rooms-weddings/" },
+    { "name": "Establishment Bar",             "suburb": "Sydney",         "state": "NSW", "address_hint": "252 George St, Sydney NSW 2000", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/establishment-bar-weddings/" },
+    { "name": "ivy Ballroom",                  "suburb": "Sydney",         "state": "NSW", "address_hint": "330 George St, Sydney NSW 2000", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/ivy-ballroom-weddings/" },
+    { "name": "uccello",                       "suburb": "Sydney",         "state": "NSW", "address_hint": "Level 6, ivy 330 George St, Sydney NSW 2000", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/uccello-weddings/" },
+    { "name": "Felix",                         "suburb": "Sydney",         "state": "NSW", "address_hint": "2 Ash St, Sydney NSW 2000", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/felix-weddings/" },
+    { "name": "Palmer & Co.",                  "suburb": "Sydney",         "state": "NSW", "address_hint": "Abercrombie Lane, Sydney NSW 2000", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/palmer-and-co-weddings/" },
+    { "name": "Charlie Parker's",              "suburb": "Paddington",     "state": "NSW", "address_hint": "230 Oxford St, Paddington NSW 2021", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/charlie-parkers-weddings/" },
+    { "name": "Fred's",                        "suburb": "Paddington",     "state": "NSW", "address_hint": "380 Oxford St, Paddington NSW 2021", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/freds-weddings/" },
+    { "name": "Bert's",                        "suburb": "Newport",        "state": "NSW", "address_hint": "327 Barrenjoey Rd, Newport NSW 2106", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/berts-weddings/" },
+    { "name": "mimi's",                        "suburb": "Coogee",         "state": "NSW", "address_hint": "169 Dolphin St, Coogee NSW 2034", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/mimis-weddings/" },
+    { "name": "Totti's Lorne",                 "suburb": "Lorne",          "state": "VIC", "address_hint": "176 Mountjoy Parade, Lorne VIC 3232", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/tottis-lorne-weddings/" },
+    { "name": "Lorne Hotel Rooftop",           "suburb": "Lorne",          "state": "VIC", "address_hint": "176 Mountjoy Parade, Lorne VIC 3232", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/lorne-hotel-rooftop-weddings/" },
+    { "name": "House of Merivale",             "suburb": "Sydney",         "state": "NSW", "address_hint": "252 George St, Sydney NSW 2000", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/house-of-merivale-weddings/" },
+    { "name": "J&M",                           "suburb": "Sydney",         "state": "NSW", "address_hint": "Sydney CBD", "evidence_url": "https://merivale.com/partiesandevents/weddings-engagements/jandm-weddings/" }
+  ]
+}
