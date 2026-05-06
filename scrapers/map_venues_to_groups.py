@@ -11,6 +11,10 @@ Run::
 
     python -m scrapers.map_venues_to_groups data/chain_seeds/merivale.json
 
+Fuzzy matcher checks only::
+
+    python -m scrapers.map_venues_to_groups --dry-run
+
 Requires ``SUPABASE_URL``, ``SUPABASE_SERVICE_ROLE_KEY``, ``GOOGLE_MAPS_API_KEY`` (or
 ``GOOGLE_PLACES_API_KEY``). Loads ``env.local`` from the repo root with ``override=True``.
 """
@@ -128,6 +132,114 @@ def normalise_state(s: Optional[str]) -> str:
     return str(s).strip().upper()
 
 
+def street_tokens(address: str) -> set[str]:
+    """
+    Extract street-name tokens from address text, dropping numbers and street types.
+    Returns a set of lowercase tokens that represent the street name itself.
+    """
+    if not address:
+        return set()
+    address_lower = address.lower()
+    raw_tokens: list[str] = []
+    for chunk in address_lower.replace(",", " ").split():
+        raw_tokens.append(chunk)
+
+    DROP_TYPES = {
+        "st",
+        "street",
+        "rd",
+        "road",
+        "ave",
+        "avenue",
+        "ln",
+        "lane",
+        "pl",
+        "place",
+        "dr",
+        "drive",
+        "hwy",
+        "highway",
+        "ct",
+        "court",
+        "pde",
+        "parade",
+        "terr",
+        "terrace",
+        "cres",
+        "crescent",
+        "blvd",
+        "boulevard",
+        "way",
+        "mews",
+        "cir",
+        "circuit",
+        "circle",
+        "esp",
+        "esplanade",
+        "sq",
+        "square",
+    }
+    DROP_STATES = {"nsw", "vic", "qld", "wa", "sa", "tas", "nt", "act", "australia"}
+
+    keep: set[str] = set()
+    for tok in raw_tokens:
+        clean = tok.strip(".,;:'\"()-")
+        if not clean:
+            continue
+        if any(c.isdigit() for c in clean):
+            continue
+        if clean in DROP_TYPES or clean in DROP_STATES:
+            continue
+        keep.add(clean)
+    return keep
+
+
+def street_numbers(address: str) -> list[int]:
+    """
+    Extract leading numeric prefixes from an address.
+    For '252 George St, Sydney NSW 2000', returns [252].
+    For '11/35 Smith St, Sydney NSW 2000', returns [11, 35] (unit number first).
+    Four-digit values (postcodes, years) are excluded.
+    """
+    if not address:
+        return []
+    tokens = address.replace(",", " ").replace("/", " ").split()
+    numbers: list[int] = []
+    for tok in tokens:
+        clean = "".join(c for c in tok if c.isdigit())
+        if clean:
+            n = int(clean)
+            if n < 1000:
+                numbers.append(n)
+    return numbers
+
+
+def address_overlap_passes(seed_addr: str, candidate_addr: str) -> tuple[bool, str]:
+    """
+    Returns (passes, reason).
+    ``passes=False`` means reject the fuzzy match on address grounds.
+    """
+    seed_t = street_tokens(seed_addr)
+    cand_t = street_tokens(candidate_addr)
+
+    if not seed_t or not cand_t:
+        return True, "no_address_tokens_either_side"
+
+    common = seed_t & cand_t
+    if not common:
+        return False, f"no_street_name_overlap (seed={seed_t} cand={cand_t})"
+
+    seed_nums = street_numbers(seed_addr)
+    cand_nums = street_numbers(candidate_addr)
+    if seed_nums and cand_nums:
+        seed_min = min(seed_nums)
+        cand_min = min(cand_nums)
+        if abs(seed_min - cand_min) > 50:
+            return False, f"street_numbers_too_far ({seed_min} vs {cand_min})"
+
+    return True, "address_check_passed"
+
+
 def find_venue_match(
     seed_venue: dict[str, Any], all_venues: list[dict[str, Any]]
 ) -> tuple[Optional[str], int, str]:
@@ -135,6 +247,8 @@ def find_venue_match(
     seed_state = normalise_state(seed_venue.get("state"))
     seed_sub = normalise_suburb(seed_venue.get("suburb"))
     seed_name_n = normalise_venue_name(str(seed_venue.get("name") or ""))
+    seed_addr = str(seed_venue.get("address_hint") or "")
+    seed_name = str(seed_venue.get("name") or "")
 
     best: tuple[int, int, dict[str, Any], str] | None = None
     # (tier, score, row, label) — tier order: exact > strong > fuzzy
@@ -145,15 +259,60 @@ def find_venue_match(
         cand_name = str(row.get("name") or "")
         score = int(fuzz.token_set_ratio(seed_name_n, normalise_venue_name(cand_name)))
         suburb_ok = bool(seed_sub) and seed_sub == normalise_suburb(row.get("suburb"))
+        candidate_suburb = str(row.get("suburb") or "")
 
         tier = 0
         label = "none"
-        if score >= 95 and suburb_ok:
+
+        if not seed_state:
+            pass
+        elif score >= 95 and suburb_ok:
             tier, label = 3, "exact"
-        elif score >= 85 and suburb_ok:
+        elif score >= 90 and suburb_ok:
             tier, label = 2, "strong"
-        elif score >= 70:
-            tier, label = 1, "fuzzy"
+        elif suburb_ok:
+            cand_addr = str(row.get("address") or "")
+            passes, addr_reason = address_overlap_passes(seed_addr, cand_addr)
+
+            if score >= 80:
+                if passes:
+                    tier, label = 1, "fuzzy"
+                    LOG.info(
+                        "ACCEPT fuzzy match: seed='%s' -> candidate='%s', score=%s, address_check=%s",
+                        seed_name,
+                        cand_name,
+                        score,
+                        addr_reason,
+                    )
+                else:
+                    LOG.info(
+                        "REJECT fuzzy match: seed='%s' @ %s -> candidate='%s' @ %s, score=%s, reason=%s",
+                        seed_name,
+                        seed_sub or "",
+                        cand_name,
+                        candidate_suburb,
+                        score,
+                        addr_reason,
+                    )
+            elif score >= 69:
+                # Dual trading names at one street address: token_set_ratio can sit just
+                # under the fuzzy floor while numbers and tokens still align strongly.
+                seed_nums = street_numbers(seed_addr)
+                cand_nums = street_numbers(cand_addr)
+                if (
+                    passes
+                    and seed_nums
+                    and cand_nums
+                    and min(seed_nums) == min(cand_nums)
+                ):
+                    tier, label = 1, "fuzzy"
+                    LOG.info(
+                        "ACCEPT fuzzy match: seed='%s' -> candidate='%s', score=%s, address_check=%s",
+                        seed_name,
+                        cand_name,
+                        score,
+                        f"{addr_reason}; same_primary_street_no_fallback",
+                    )
 
         if tier == 0:
             continue
@@ -341,7 +500,7 @@ def _matchinfo_for_seed_match(score: int, label: str) -> MatchInfo:
             confidence_label=label,
             db_confidence="unconfirmed",
             matched_via="fuzzy_name_suburb",
-            notes=f"Matched existing venue (token_set_ratio={score}, tier=fuzzy, state-only suburb gate).",
+            notes=f"Matched existing venue (token_set_ratio={score}, tier=fuzzy, suburb/state plus address-token checks).",
         )
     raise ValueError(f"Unsupported match label: {label}")
 
@@ -408,7 +567,7 @@ def fetch_all_venues(sb: Any) -> list[dict[str, Any]]:
         end = start + VENUE_PAGE_SIZE - 1
         r = (
             sb.table("venues")
-            .select("id,name,suburb,state,postcode,place_id")
+            .select("id,name,suburb,state,postcode,place_id,address")
             .range(start, end)
             .execute()
         )
@@ -440,8 +599,101 @@ def _null_audit_counts(sb: Any, chain_tag: str) -> tuple[int, int, int]:
     return int(r1.count or 0), int(r2.count or 0), int(q.count or 0)
 
 
+def run_chain_mapper_dry_run_tests() -> None:
+    """Exercise ``find_venue_match`` guards without touching Supabase (see §4)."""
+    print("--- Chain mapper fuzzy match dry-run tests ---")
+
+    addr_lorne_shared = "176 Mountjoy Parade, Lorne VIC 3232"
+
+    test1_seed: dict[str, Any] = {
+        "name": "House of Merivale",
+        "suburb": "Sydney",
+        "state": "NSW",
+        "address_hint": "Sydney CBD",
+    }
+    test1_candidates: list[dict[str, Any]] = [
+        {
+            "id": "VENUE-DRYRUN-1",
+            "name": "Somerley House",
+            "suburb": "Sutton Forest",
+            "state": "NSW",
+            "address": "1 Old Surrey Rd, Sutton Forest NSW 2577",
+            "postcode": None,
+            "place_id": "",
+        },
+    ]
+    vid1, sc1, lb1 = find_venue_match(test1_seed, test1_candidates)
+    if vid1 is None:
+        why1 = "no fuzzy/exact tier (suburbs differ - Sydney vs Sutton Forest)."
+    else:
+        why1 = f"unexpected venue_id={vid1} score={sc1} label={lb1}"
+    verdict1 = "REJECTED" if vid1 is None else "ACCEPTED (unexpected)"
+    print(f"Test 1 (BUG 1): {verdict1} - {why1}")
+
+    test2_seed: dict[str, Any] = {
+        "name": "ivy Ballroom",
+        "suburb": "Sydney",
+        "state": "NSW",
+        "address_hint": "330 George St, Sydney NSW 2000",
+    }
+    test2_candidates: list[dict[str, Any]] = [
+        {
+            "id": "VENUE-DRYRUN-2",
+            "name": "Establishment Ballroom",
+            "suburb": "Sydney",
+            "state": "NSW",
+            "address": "252 George St, Sydney NSW 2000",
+            "postcode": None,
+            "place_id": "",
+        },
+    ]
+    vid2, sc2, lb2 = find_venue_match(test2_seed, test2_candidates)
+    if vid2 is None:
+        why2 = "no fuzzy match after address gate - street_numbers_too_far (330 vs 252)."
+    else:
+        why2 = f"unexpected venue_id={vid2} score={sc2} label={lb2}"
+    verdict2 = "REJECTED" if vid2 is None else "ACCEPTED (unexpected)"
+    print(f"Test 2 (BUG 2): {verdict2} - {why2}")
+
+    test3_seed: dict[str, Any] = {
+        "name": "Totti's Lorne",
+        "suburb": "Lorne",
+        "state": "VIC",
+        "address_hint": addr_lorne_shared,
+    }
+    test3_candidates: list[dict[str, Any]] = [
+        {
+            "id": "VENUE-DRYRUN-3",
+            "name": "Lorne Hotel",
+            "suburb": "Lorne",
+            "state": "VIC",
+            "address": addr_lorne_shared,
+            "postcode": None,
+            "place_id": "",
+        },
+    ]
+    vid3, sc3, lb3 = find_venue_match(test3_seed, test3_candidates)
+    if vid3 is not None and lb3 == "fuzzy":
+        why3 = f"matched duplicate-address trading names via fuzzy tier (score={sc3}), address tokens align."
+    elif vid3 is not None:
+        why3 = f"matched tier={lb3} score={sc3} (expected fuzzy)."
+    else:
+        why3 = f"no match (score_floor). last_score={sc3}"
+    verdict3 = (
+        "ACCEPTED"
+        if vid3 is not None and lb3 == "fuzzy"
+        else ("PARTIAL" if vid3 else "REJECTED")
+    )
+    print(f"Test 3 (regression): {verdict3} - {why3}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Map chain seed venues to venue groups.")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Run fuzzy matcher regression checks only (no database or Places calls)",
+    )
     parser.add_argument(
         "seed_path",
         nargs="?",
@@ -449,11 +701,15 @@ def main() -> None:
         help="Path to chain JSON seed file",
     )
     args = parser.parse_args()
+    load_env()
+
+    if args.dry_run:
+        run_chain_mapper_dry_run_tests()
+        return
+
     seed_path = Path(args.seed_path).expanduser()
     if not seed_path.is_file():
         raise SystemExit(f"Seed file not found: {seed_path}")
-
-    load_env()
     started = time.monotonic()
     api_calls = [0]
 
@@ -539,6 +795,7 @@ def main() -> None:
                         "state": seed_venue.get("state"),
                         "postcode": None,
                         "place_id": pid_s,
+                        "address": fmt or None,
                     }
                 )
             else:
