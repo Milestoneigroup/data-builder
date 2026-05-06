@@ -255,6 +255,7 @@ def _fetch_venues_page(sb: Any, offset: int, limit: int) -> list[dict[str, Any]]
         .select(sel)
         .not_.is_("place_id", "null")
         .neq("place_id", "")
+        .order("enrichment_run_at", desc=False, nullsfirst=True)
         .order("id")
         .range(offset, offset + limit - 1)
     )
