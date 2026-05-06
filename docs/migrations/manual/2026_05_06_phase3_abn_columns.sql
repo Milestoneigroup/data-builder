@@ -1,0 +1,41 @@
+-- Phase 3 ABN enrichment — schema reference (applied on Supabase milestonei-platform)
+-- Date: 2026-05-06 (Australian Eastern)
+--
+-- This file records columns used by data-builder workstreams W1–W3. Apply the
+-- canonical DDL in the main platform migration set; do not run this blindly
+-- against production if those objects already exist.
+--
+-- public.venue_groups — group-level ABN resolution
+--   group_abn text
+--   group_abn_status text  -- e.g. skipped | verified | probable | not_found | multiple_candidates
+--   group_abn_evidence_method text
+--   group_abn_evidence_url text
+--   group_abn_entity_name text
+--   group_abn_entity_type text
+--   group_abn_lookup_attempted_at timestamptz
+--   group_abn_notes jsonb
+--
+-- public.venues — Phase 2 match + Phase 3 scoring / inheritance audit
+--   abn_phase2_value text
+--   abn_phase2_entity_legal_name text
+--   abn_phase2_entity_type text
+--   abn_phase2_match_confidence text
+--   abn_phase2_query_strategy text
+--   abn_phase2_query_used text
+--   abn_phase2_candidates jsonb
+--   abn_phase3_method text
+--   abn_phase3_score integer
+--   abn_phase3_attempted_at timestamptz
+--   abn_phase3_notes text
+--
+-- W1 updates only group_abn_* on venue_groups (and updated_at).
+-- W2/W3 update only abn_phase2_* (where value is null) and abn_phase3_* on venues.
+-- Brand-affiliate groups: pre-mark group_abn_status = 'skipped' (do not scrape).
+--
+-- Supabase CHECK constraints (as at 2026-05-06) enforced on venues:
+--   abn_phase2_match_confidence ∈ {exact, strong, fuzzy, multiple_candidates, no_match, error}
+--   abn_phase2_query_strategy ∈ {licensee_legal_name, google_name, venue_name, manual}
+--   abn_phase3_method ∈ {group_inherited_verified, group_inherited_probable,
+--                         candidate_score_winner, candidate_score_no_winner, untouched}
+-- Inherit / scoring scripts map intended semantics onto these allowed literals
+-- (e.g. inherited verified → match confidence ``strong``, strategy ``manual``).
