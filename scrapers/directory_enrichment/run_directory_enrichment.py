@@ -108,7 +108,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument(
         "--schedule",
         action="store_true",
-        help="Run as APScheduler daemon (weekly cron, UTC).",
+        help="Run as APScheduler daemon (monthly cron, UTC).",
     )
     p.add_argument("--start-page", type=int, default=1, help="Easy Weddings pagination start.")
     p.add_argument(
@@ -172,18 +172,22 @@ def main(argv: list[str] | None = None) -> int:
             finally:
                 cl.close()
 
+        # Monthly cadence chosen because directory content rate-of-change is low.
+        # Originally weekly; reduced to monthly 7 May 2026 after one full sweep captured
+        # 1,414 new vendors representing accumulated history not weekly drift.
         sched.add_job(
             _job_ew,
-            CronTrigger(day_of_week="mon", hour=2, minute=0),
-            id="directory_enrichment_easy_weddings_weekly",
+            CronTrigger(day=1, hour=2, minute=0),
+            id="directory_enrichment_easy_weddings_monthly",
         )
         sched.add_job(
             _job_hm,
-            CronTrigger(day_of_week="tue", hour=2, minute=0),
-            id="directory_enrichment_hello_may_weekly",
+            CronTrigger(day=2, hour=2, minute=0),
+            id="directory_enrichment_hello_may_monthly",
         )
         log.info(
-            "BlockingScheduler started (UTC): Easy Weddings Mondays 02:00; Hello May Tuesdays 02:00."
+            "BlockingScheduler started (UTC): Easy Weddings 1st of month 02:00; "
+            "Hello May 2nd of month 02:00."
         )
         sched.start()
         return 0
