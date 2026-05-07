@@ -231,6 +231,7 @@ def run_hello_may(
                 directory_patch = {
                     "hello_may_url": profile_url,
                     "hello_may_url_confirmed": True,
+                    "hello_may_category": category,
                     "hello_may_listing_seen_at": now,
                     "last_directory_check_at": now,
                 }
