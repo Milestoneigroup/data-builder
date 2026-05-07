@@ -29,7 +29,8 @@ _VENUES_SELECT_GAP = (
     "id,name,state,suburb,postcode,place_id,google_name,google_rating,google_review_count,"
     "google_maps_url,google_primary_type,google_phone,website_from_google,business_status,lat,"
     "lng,google_address,google_address_components_json,google_types_json,google_editorial_summary,"
-    "opening_hours_json,enrichment_date,places_match_confidence,"
+    "opening_hours_json,enrichment_date,places_match_confidence,website_from_google_low_confidence,"
+    "last_directory_check_at,"
     "review_text_1,review_author_1,review_rating_1,review_date_1,review_text_2,review_author_2,"
     "review_rating_2,review_date_2,review_text_3,review_author_3,review_rating_3,review_date_3,"
     "review_text_4,review_author_4,review_rating_4,review_date_4,review_text_5,review_author_5,"
@@ -42,7 +43,7 @@ _CELEB_SELECT_GAP = (
     "google_primary_type,google_phone,google_address,google_types_json,google_editorial_summary,"
     "website_from_google,website_from_places,places_enriched_date,places_match_confidence,"
     "last_places_enrich_at,phone_from_places,business_status,lat,lng,google_address_components_json,"
-    "website,phone"
+    "website,phone,website_from_google_low_confidence,last_directory_check_at"
 )
 
 _PHOTO_SELECT_GAP = (
@@ -50,7 +51,7 @@ _PHOTO_SELECT_GAP = (
     "google_review_count,google_maps_url,google_primary_type,google_phone,google_address,"
     "google_types_json,website_from_google,places_enriched_date,places_match_confidence,"
     "business_status,lat,lng,google_editorial_summary,google_address_components_json,website,"
-    "tier"
+    "tier,website_from_google_low_confidence,last_directory_check_at"
 )
 
 

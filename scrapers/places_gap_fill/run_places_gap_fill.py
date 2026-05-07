@@ -45,13 +45,40 @@ def _run_batches(
 
     with httpx.Client() as http:
         if vendor_type in ("venues", "all"):
-            agg.append(run_venues_gap_fill(sb, http, tracker, limit=limit, dry_run=dry_run, log=log))
+            spent_before = float(tracker.spent_usd)
+            summ = run_venues_gap_fill(sb, http, tracker, limit=limit, dry_run=dry_run, log=log)
+            summ["_incremental_spend_usd"] = float(tracker.spent_usd) - spent_before
+            agg.append(summ)
         if vendor_type in ("celebrants", "all"):
-            agg.append(
-                run_celebrants_gap_fill(sb, http, tracker, limit=limit, dry_run=dry_run, log=log),
-            )
+            spent_before = float(tracker.spent_usd)
+            summ = run_celebrants_gap_fill(sb, http, tracker, limit=limit, dry_run=dry_run, log=log)
+            summ["_incremental_spend_usd"] = float(tracker.spent_usd) - spent_before
+            agg.append(summ)
         if vendor_type in ("photographers", "all"):
-            agg.append(run_photographers_gap_fill(sb, http, tracker, limit=limit, dry_run=dry_run, log=log))
+            spent_before = float(tracker.spent_usd)
+            summ = run_photographers_gap_fill(sb, http, tracker, limit=limit, dry_run=dry_run, log=log)
+            summ["_incremental_spend_usd"] = float(tracker.spent_usd) - spent_before
+            agg.append(summ)
+
+    for s in agg:
+        vt = str(s.get("processed_type") or "unknown")
+        hi = int(s.get("enriched_high") or 0)
+        low = int(s.get("enriched_low_website") or 0)
+        sk = int(s.get("skipped") or 0)
+        touched = int(s.get("vendors_touched") or 0)
+        tqv = int(s.get("total_query_variations") or 0)
+        avg_q = (tqv / touched) if touched else 0.0
+        inc_spend = float(s.pop("_incremental_spend_usd", tracker.spent_usd))
+        log.info(
+            "%s complete: %s enriched (high), %s website-only (low), %s skipped, "
+            "spend $%.2f, avg query variations: %.2f",
+            vt,
+            hi,
+            low,
+            sk,
+            inc_spend,
+            avg_q,
+        )
 
     return agg, tracker
 

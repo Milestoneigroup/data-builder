@@ -25,7 +25,10 @@ TEXT_SEARCH_COST = 0.032
 PLACE_DETAILS_COST = 0.017
 AVG_PER_VENDOR = 0.049
 REQUEST_DELAY_S = 0.2
-MATCH_SCORE_THRESHOLD = 0.7
+HIGH_CONFIDENCE_THRESHOLD = 0.65
+LOW_CONFIDENCE_THRESHOLD = 0.50
+NAME_DOMINANCE_THRESHOLD = 0.85
+MATCH_SCORE_THRESHOLD = HIGH_CONFIDENCE_THRESHOLD
 VERIFY_SENTINEL = "VERIFY_REQUIRED"
 
 
@@ -129,9 +132,9 @@ def confidence_band_from_pct(pct: int) -> str:
 
     if pct >= 85:
         return "HIGH"
-    if pct >= 70:
+    if pct >= 65:
         return "MEDIUM"
-    if pct >= 60:
+    if pct >= 50:
         return "LOW"
     return "LOW"
 

@@ -6,22 +6,18 @@ from datetime import date, datetime, timezone
 from typing import Any
 
 import httpx
-from thefuzz import fuzz
 
 from ._framework import (
-    MATCH_SCORE_THRESHOLD,
-    PLACE_DETAILS_COST,
-    TEXT_SEARCH_COST,
+    HIGH_CONFIDENCE_THRESHOLD,
+    LOW_CONFIDENCE_THRESHOLD,
     augmented_subset,
     confidence_band_from_pct,
     is_blank_for_augment,
 )
 from ._places_client import (
-    display_name_text,
     extract_universal_fields,
-    place_details_budgeted,
+    find_place_with_fallbacks,
     place_id_from_resource,
-    text_search_budgeted,
 )
 from ._query_builder import fetch_celebrant_gap_cohort
 
@@ -37,9 +33,11 @@ _CELEBR_AUGMENT_KEYS = {
     "google_types_json",
     "website_from_google",
     "website_from_places",
+    "website_from_google_low_confidence",
     "places_enriched_date",
     "places_match_confidence",
     "last_places_enrich_at",
+    "last_directory_check_at",
     "phone_from_places",
     "business_status",
     "lat",
@@ -61,27 +59,6 @@ def _label(row: dict[str, Any]) -> str:
     return (str(row.get("full_name") or "").strip() or str(row.get("name") or "").strip())
 
 
-def _build_query(label: str, suburb: str, state: str) -> str:
-    return ", ".join(
-        p for p in (label, str(suburb or "").strip(), str(state or "").strip(), "Australia") if p
-    )
-
-
-def _search_queries(label: str, suburb: str, state: str) -> list[str]:
-    primary = _build_query(label, suburb, state)
-    st = str(state or "").strip()
-    tail: list[str] = [primary]
-    if label and st:
-        tail.append(f"{label} celebrant {st} Australia".strip())
-        tail.append(f"{label} wedding celebrant Australia".strip())
-    out: list[str] = []
-    for q in tail:
-        q = q.strip()
-        if q and q not in out:
-            out.append(q)
-    return out
-
-
 def _google_place_claimed_elsewhere(sb: Any, place_id: str, own_id: str) -> bool:
     norm = place_id_from_resource(place_id)
     if not norm:
@@ -99,41 +76,6 @@ def _google_place_claimed_elsewhere(sb: Any, place_id: str, own_id: str) -> bool
         if cid and cid != self_id:
             return True
     return False
-
-
-def _pick_candidate(
-    places: list[dict[str, Any]],
-    *,
-    match_name: str,
-    celebrant_id: str,
-    sb: Any,
-    log: Any,
-) -> tuple[dict[str, Any] | None, float, str]:
-    best: dict[str, Any] | None = None
-    best_pct = -1
-    below = 0
-    for cand in places:
-        cand_nm = display_name_text(cand)
-        pct = fuzz.token_sort_ratio(match_name.lower(), (cand_nm or "").lower())
-        if pct / 100.0 < MATCH_SCORE_THRESHOLD:
-            below += 1
-            continue
-        pid = place_id_from_resource(str(cand.get("name") or cand.get("id") or ""))
-        if _google_place_claimed_elsewhere(sb, pid, celebrant_id):
-            below += 1
-            continue
-        if pct > best_pct:
-            best = cand
-            best_pct = pct
-    if best is None:
-        log.info(
-            "low confidence cohort=celebrants match_name=%s excluded_below_threshold=%s",
-            match_name,
-            below,
-        )
-        return None, 0.0, "UNKNOWN"
-    pct_i = max(0, min(100, int(best_pct)))
-    return best, best_pct / 100.0, confidence_band_from_pct(pct_i)
 
 
 def _rating_text(rating: Any) -> str | None:
@@ -154,7 +96,11 @@ def _count_text(cnt: Any) -> str | None:
         return None
 
 
-def _compose_proposed(existing: dict[str, Any], det: dict[str, Any], confidence: str) -> dict[str, Any]:
+def _compose_proposed_high(
+    existing: dict[str, Any],
+    det: dict[str, Any],
+    confidence: str,
+) -> dict[str, Any]:
     uni = extract_universal_fields(det)
     canon = uni.pop("canonical_place_id") or ""
     rating_src = uni.get("google_rating")
@@ -177,6 +123,7 @@ def _compose_proposed(existing: dict[str, Any], det: dict[str, Any], confidence:
         "places_match_confidence": confidence,
         "places_enriched_date": today,
         "last_places_enrich_at": now_iso,
+        "website_from_google_low_confidence": False,
     }
 
     wf_places = str(wf or "").strip()
@@ -207,7 +154,9 @@ def run_celebrants_gap_fill(
         limit,
     )
 
-    enriched = skipped = low_conf = stopped_budget = 0
+    enriched_high = enriched_low = skipped = stopped_budget = 0
+    total_query_variations = 0
+    vendors_touched = 0
 
     for row in rows:
         cid = str(row.get("celebrant_id") or "").strip()
@@ -219,85 +168,116 @@ def run_celebrants_gap_fill(
             skipped += 1
             continue
 
-        ts_payload: dict[str, Any] = {}
-        hits: list[dict[str, Any]] = []
+        vendors_touched += 1
+        fp = find_place_with_fallbacks(
+            name=label,
+            state=state or None,
+            suburb=suburb or None,
+            vendor_type="celebrants",
+            http=http,
+            tracker=tracker,
+            logger=log,
+            place_id_claimed=lambda pid: _google_place_claimed_elsewhere(sb, pid, cid),
+        )
+        total_query_variations += fp.queries_tried
 
-        for attempt in _search_queries(label, suburb, state):
-            if tracker is not None and not tracker.can_afford(TEXT_SEARCH_COST):
-                stopped_budget += 1
-                break
-            ts_payload = text_search_budgeted(http, tracker, query=attempt)
-            if ts_payload.get("_skipped") == "budget":
-                stopped_budget += 1
-                hits = []
-                break
-            cand_hits = ts_payload.get("places") or []
-            if cand_hits:
-                hits = cand_hits
-                log.info(
-                    "celebrant text search ok celebrant_id=%s query=%s hits=%s",
-                    cid,
-                    attempt,
-                    len(cand_hits),
-                )
-                break
-
-        if stopped_budget:
+        if fp.budget_exhausted:
+            stopped_budget += 1
             break
 
-        if not hits:
-            log.info("no text search hits celebrants celebrant_id=%s", cid)
+        if fp.details is None:
+            log.info("no match across 5 variations, skipping %s", cid)
             skipped += 1
             continue
 
-        cand, pct_f, bucket = _pick_candidate(
-            hits,
-            match_name=label,
-            celebrant_id=cid,
-            sb=sb,
-            log=log,
-        )
-        if cand is None:
-            low_conf += 1
-            continue
+        confidence = fp.confidence
+        query_used = fp.query_used or ""
 
-        if tracker is not None and not tracker.can_afford(PLACE_DETAILS_COST):
-            stopped_budget += 1
-            break
+        if confidence >= HIGH_CONFIDENCE_THRESHOLD:
+            pct_i = max(0, min(100, int(round(confidence * 100))))
+            bucket = confidence_band_from_pct(pct_i)
+            proposed = _compose_proposed_high(row, fp.details, bucket)
 
-        pid = place_id_from_resource(str(cand.get("name") or cand.get("id") or ""))
-        det = place_details_budgeted(http, tracker, place_id=pid, include_venue_only=False)
-        if det.get("_skipped") == "budget":
-            stopped_budget += 1
-            break
+            augment_body = augmented_subset(row, proposed, augment_keys=_CELEBR_AUGMENT_KEYS)
 
-        proposed = _compose_proposed(row, det, bucket)
-        augment_body = augmented_subset(row, proposed, augment_keys=_CELEBR_AUGMENT_KEYS)
+            patch_final = dict(augment_body)
+            for k in _SENTINELS_ALWAYS_WRITE:
+                patch_final[k] = proposed[k]
 
-        patch_final = dict(augment_body)
-        for k in _SENTINELS_ALWAYS_WRITE:
-            patch_final[k] = proposed[k]
+            if dry_run:
+                log.info(
+                    "dry-run celebrants celebrant_id=%s would_patch_keys=%s match=%.2f",
+                    cid,
+                    sorted(patch_final.keys()),
+                    confidence,
+                )
+                enriched_high += 1
+                continue
 
-        if dry_run:
+            sb.table("celebrants").update(patch_final).eq("celebrant_id", cid).execute()
+            enriched_high += 1
             log.info(
-                "dry-run celebrants celebrant_id=%s would_patch_keys=%s match=%.3f",
+                "enriched (high) %s match=%.2f query='%s'",
                 cid,
-                sorted(patch_final.keys()),
-                pct_f,
+                confidence,
+                query_used,
             )
-            enriched += 1
-            continue
 
-        sb.table("celebrants").update(patch_final).eq("celebrant_id", cid).execute()
-        enriched += 1
-        log.info("enriched celebrants celebrant_id=%s match=%.3f", cid, pct_f)
+        elif confidence >= LOW_CONFIDENCE_THRESHOLD:
+            wuri = str(fp.details.get("websiteUri") or "").strip() or None
+            now_iso = datetime.now(timezone.utc).isoformat()
+            pct_i = max(0, min(100, int(round(confidence * 100))))
+            conf_bucket = confidence_band_from_pct(pct_i)
+            proposed = {
+                "website_from_google": wuri,
+                "website_from_google_low_confidence": True,
+                "places_match_confidence": conf_bucket,
+                "last_directory_check_at": now_iso,
+            }
+            augment_body = augmented_subset(row, proposed, augment_keys=_CELEBR_AUGMENT_KEYS)
+            patch_final = {k: v for k, v in augment_body.items() if v is not None}
+            patch_final["website_from_google_low_confidence"] = True
+            patch_final["places_match_confidence"] = conf_bucket
+            patch_final["last_directory_check_at"] = now_iso
+
+            if dry_run:
+                log.info(
+                    "dry-run low-conf celebrants celebrant_id=%s keys=%s match=%.2f",
+                    cid,
+                    sorted(patch_final.keys()),
+                    confidence,
+                )
+                enriched_low += 1
+                continue
+
+            if not patch_final:
+                log.info("low-conf celebrants celebrant_id=%s no augmentable fields, skip", cid)
+                skipped += 1
+                continue
+
+            sb.table("celebrants").update(patch_final).eq("celebrant_id", cid).execute()
+            enriched_low += 1
+            log.info(
+                "low-conf website captured %s match=%.2f query='%s'",
+                cid,
+                confidence,
+                query_used,
+            )
+
+        else:
+            log.info("all variations below 0.50, skip %s", cid)
+            skipped += 1
 
     return {
         "processed_type": "celebrants",
         "cohort_requested_cap": limit,
         "cohort_loaded": len(rows),
-        "enriched": enriched,
+        "enriched": enriched_high + enriched_low,
+        "enriched_high": enriched_high,
+        "enriched_low_website": enriched_low,
         "skipped": skipped,
-        "low_confidence": low_conf,
+        "low_confidence": 0,
         "stopped_budget": stopped_budget,
+        "total_query_variations": total_query_variations,
+        "vendors_touched": vendors_touched,
     }
