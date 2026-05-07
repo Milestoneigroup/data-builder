@@ -41,10 +41,19 @@ env.local
 data/*
 !data/.gitkeep
 !data/ew_celebrants.csv
+!data/seed_weather_test_cells.json
+!data/chain_seeds/
+!data/chain_seeds/*.json
 
 # Log files (keep logs/ directory via .gitkeep)
 logs/*
 !logs/.gitkeep
+
+# LLM verifier I/O (sensitive contact data)
+scrapers/llm_data_verifier/inputs/*
+!scrapers/llm_data_verifier/inputs/.gitkeep
+scrapers/llm_data_verifier/outputs/*
+!scrapers/llm_data_verifier/outputs/.gitkeep
 
 # Logs and temp
 *.log
