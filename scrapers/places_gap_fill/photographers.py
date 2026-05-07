@@ -42,7 +42,9 @@ _PHOTO_AUG_KEYS = {
     "last_directory_check_at",
 }
 
-_PATCH_ALWAYS = frozenset({"places_enriched_date", "places_match_confidence"})
+_PATCH_ALWAYS = frozenset(
+    {"places_enriched_date", "places_match_confidence", "website_from_google_low_confidence"}
+)
 
 
 def _display_label(row: dict[str, Any]) -> str:

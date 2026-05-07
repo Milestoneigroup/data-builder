@@ -51,6 +51,7 @@ _SENTINELS_ALWAYS_WRITE = frozenset(
         "places_match_confidence",
         "places_enriched_date",
         "last_places_enrich_at",
+        "website_from_google_low_confidence",
     },
 )
 

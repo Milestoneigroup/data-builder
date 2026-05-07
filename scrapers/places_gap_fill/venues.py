@@ -64,7 +64,12 @@ _VENUES_AUGMENT_KEYS = {
 }
 
 _EXTRA_ALWAYS_KEYS = frozenset(
-    {"places_match_confidence", "enrichment_date", "enrichment_status"},
+    {
+        "places_match_confidence",
+        "enrichment_date",
+        "enrichment_status",
+        "website_from_google_low_confidence",
+    },
 )
 
 def _place_id_claimed_elsewhere(sb: Any, place_id: str, venue_id: str) -> bool:

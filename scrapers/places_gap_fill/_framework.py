@@ -118,6 +118,9 @@ def is_blank_for_augment(val: Any) -> bool:
     """True when Places-derived fields should be permitted to populate."""
     if val is None:
         return True
+    if val is False:
+        # Default false on new boolean columns is augmentable (e.g. low-confidence flag).
+        return True
     if isinstance(val, str):
         s = val.strip()
         if not s or s.upper() == "NAN":
