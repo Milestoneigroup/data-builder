@@ -37,12 +37,11 @@ load_dotenv(_ROOT / "env.local", override=True)
 
 VENUE_BUCKET = "venue_photos"
 BATCH_VENUES = 25
-THROTTLE_MEDIA_SEC = 0.2
+THROTTLE_MEDIA_SEC = 0.3
 THROTTLE_BATCH_SEC = 1.0
 MAX_PHOTOS_PER_VENUE = 10
 MAX_MEDIA_CALLS_HARD = 4000
-MAX_ESTIMATE_USD = 60.0
-MAX_RUNTIME_SEC = 90 * 60
+MAX_ESTIMATE_USD = 50.0
 CONSECUTIVE_FAILURE_CAP = 5
 PAUSE_ON_FAILURE_CLUSTER_SEC = 60
 
@@ -95,7 +94,7 @@ def _supabase_client() -> Client:
 
 
 def _load_pending_queue(client: Client) -> list[dict[str, Any]]:
-    """All venues awaiting their first stored photo set."""
+    """Venues with a Place ID and primary photo ref but no Storage URLs yet (true gaps only)."""
     offset = 0
     chunk = 1000
     out: list[dict[str, Any]] = []
@@ -104,21 +103,40 @@ def _load_pending_queue(client: Client) -> list[dict[str, Any]]:
             client.table("venues")
             .select(
                 "id,name,place_id,photo_ref_1,photo_ref_2,photo_ref_3,photo_ref_4,"
-                "total_photo_count"
+                "total_photo_count,data_source"
             )
-            .is_("photos_downloaded_at", "null")
+            .is_("photo_storage_urls", "null")
             .not_.is_("place_id", "null")
-            .order("updated_at")
+            .not_.is_("photo_ref_1", "null")
+            .order("id")
             .range(offset, offset + chunk - 1)
         )
         rows = q.execute().data or []
         if not rows:
             break
-        out.extend(row for row in rows if _has_photo_enrichment(row))
+        out.extend(rows)
         offset += chunk
         if len(rows) < chunk:
             break
+    out.sort(
+        key=lambda r: (
+            0 if r.get("data_source") == "chain_seed_csv_v3" else 1,
+            str(r.get("id") or ""),
+        )
+    )
     return out
+
+
+def _stamp_photos_downloaded_at_where_stored(sb: Client) -> None:
+    """Backfill timestamps where photos already exist in Storage (keeps audit queries clean)."""
+    now_iso = datetime.now(UTC).isoformat()
+    sb.table("venues").update({"photos_downloaded_at": now_iso}).not_.is_(
+        "photo_storage_urls", "null"
+    ).is_("photos_downloaded_at", "null").execute()
+    print(
+        "Housekeeping: set photos_downloaded_at where photo_storage_urls is present "
+        "but photos_downloaded_at was null."
+    )
 
 
 def _place_details(session: httpx.Client, google_key: str, place_resource: str) -> dict[str, Any]:
@@ -208,6 +226,7 @@ def run() -> None:
     google_key = _require_env("GOOGLE_MAPS_API_KEY")
     sb = _supabase_client()
     ensure_bucket(sb)
+    _stamp_photos_downloaded_at_where_stored(sb)
 
     pre_no_enrichment = _count_no_ref_venues(sb)
 
@@ -219,7 +238,6 @@ def run() -> None:
     summary_every = BATCH_VENUES
     pending_accum = _load_pending_queue(sb)
 
-    script_started = time.monotonic()
     stop_everything = False
 
     session = httpx.Client()
@@ -235,10 +253,6 @@ def run() -> None:
     )
 
     while True:
-        elapsed = time.monotonic() - script_started
-        if elapsed > MAX_RUNTIME_SEC:
-            print("Hard stop: 90-minute runtime elapsed.")
-            break
         spend = _estimate_cost_usd(place_calls, media_calls)
         if spend >= MAX_ESTIMATE_USD:
             print(
