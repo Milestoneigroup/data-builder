@@ -8,14 +8,13 @@ Requires a linked Railway project and authenticated CLI (``railway login``
 or ``RAILWAY_TOKEN``). Optional env:
 
 - ``RAILWAY_SERVICE`` — service name (default: ``llm-data-verifier``)
-- ``RAILWAY_LOG_LINES`` — lines per fetch (default: 8000)
+- ``RAILWAY_LOG_LINES`` — lines per fetch (default: ``500``; very large values can error on the API)
 """
 
 from __future__ import annotations
 
 import json
 import os
-import re
 import shutil
 import subprocess
 import sys
@@ -26,9 +25,12 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parents[2]
 _OUT = _ROOT / "scrapers" / "llm_data_verifier" / "outputs"
 _LOG_FILE = _OUT / "railway_logs.txt"
-_COMPLETION_RE = re.compile(r"===END OUTPUT FILE\s+verification_summary_.*===\s*$")
+_END_VERIFICATION_SUMMARY = "===END OUTPUT FILE verification_summary_"
+_END_PHOTO_CSV = "===END OUTPUT FILE master_photographers_VERIFIED_"
+_END_CELEB_CSV = "===END OUTPUT FILE master_celebrants_VERIFIED_"
 _POLL_SECONDS = 60
-_TIMEOUT_SECONDS = 90 * 60
+# Full photographer + celebrant cohorts with 1.5–3.0 s polite delays often exceed 90 minutes.
+_TIMEOUT_SECONDS = 4 * 60 * 60
 _MAX_CONSECUTIVE_CLI_ERRORS = 3
 
 
@@ -81,7 +83,7 @@ def _append_snapshot(blob: str, poll_index: int) -> None:
 
 def main() -> int:
     service = (os.environ.get("RAILWAY_SERVICE") or "llm-data-verifier").strip()
-    lines = int(os.environ.get("RAILWAY_LOG_LINES") or "8000")
+    lines = int(os.environ.get("RAILWAY_LOG_LINES") or "500")
 
     t_start = time.monotonic()
     seen_messages: set[str] = set()
@@ -139,7 +141,11 @@ def main() -> int:
             _append_snapshot(blob, poll_index)
 
         combined = "\n".join(all_text_parts)
-        if _COMPLETION_RE.search(combined) or "===END OUTPUT FILE verification_summary_" in combined:
+        if (
+            _END_VERIFICATION_SUMMARY in combined
+            and _END_PHOTO_CSV in combined
+            and _END_CELEB_CSV in combined
+        ):
             return 0
 
         time.sleep(_POLL_SECONDS)
