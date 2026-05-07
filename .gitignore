@@ -55,6 +55,10 @@ scrapers/llm_data_verifier/inputs/*
 scrapers/llm_data_verifier/outputs/*
 !scrapers/llm_data_verifier/outputs/.gitkeep
 
+# Feature branch deployment exception — DO NOT MERGE TO MAIN
+!scrapers/llm_data_verifier/inputs/master_photographers_enriched.csv
+!scrapers/llm_data_verifier/inputs/master_celebrants_enriched.csv
+
 # Logs and temp
 *.log
 tmp/
